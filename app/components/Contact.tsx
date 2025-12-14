@@ -64,7 +64,7 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="relative py-32 bg-[#0a0a0a]">
+    <section id="contact" className="relative py-32">
       {/* Background gradient */}
       <div className="absolute bottom-0 left-0 w-full h-1/2 bg-linear-to-t from-[#ff6b35]/5 to-transparent pointer-events-none" />
 

@@ -4,12 +4,14 @@ import About from "./components/About";
 import Portfolio from "./components/Portfolio";
 import Showcase from "./components/Showcase";
 import Contact from "./components/Contact";
+import ThreeCube from "./components/ThreeCube";
 
 export default function Home() {
   return (
     <>
+      <ThreeCube />
       <Navigation />
-      <main>
+      <main className="relative z-10">
         <Hero />
         <About />
         <Portfolio />

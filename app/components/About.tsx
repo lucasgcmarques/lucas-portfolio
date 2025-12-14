@@ -17,7 +17,7 @@ const stats = [
 
 export default function About() {
   return (
-    <section id="about" className="relative py-32 bg-[#0d0d0d] overflow-hidden">
+    <section id="about" className="relative py-32 overflow-hidden">
       {/* Background elements */}
       <div className="absolute top-0 right-0 w-1/2 h-full bg-linear-to-l from-[#ff6b35]/5 to-transparent" />
 

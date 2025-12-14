@@ -3,7 +3,7 @@ import { projects } from "../data/projects";
 
 export default function Portfolio() {
   return (
-    <section id="portfolio" className="relative py-32 bg-[#0a0a0a]">
+    <section id="portfolio" className="relative py-32">
       {/* Background pattern */}
       <div
         className="absolute inset-0 opacity-[0.02]"
