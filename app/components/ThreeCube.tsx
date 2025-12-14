@@ -34,26 +34,26 @@ export default function ThreeCube() {
     renderer.setPixelRatio(window.devicePixelRatio);
     container.appendChild(renderer.domElement);
 
-    // Cubo
-    const geometry = new THREE.BoxGeometry(2, 2, 2);
+    // Torus
+    const geometry = new THREE.TorusGeometry(1.5, 0.5, 32, 100);
     const material = new THREE.MeshStandardMaterial({
       color: 0xff6b35,
       metalness: 0.5,
       roughness: 0.3,
     });
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
+    const torus = new THREE.Mesh(geometry, material);
+    scene.add(torus);
 
-    // Wireframe
-    const wireGeometry = new THREE.BoxGeometry(2.5, 2.5, 2.5);
+    // Wireframe Torus
+    const wireGeometry = new THREE.TorusGeometry(2, 0.4, 16, 50);
     const wireMaterial = new THREE.MeshBasicMaterial({
       color: 0x4ecdc4,
       wireframe: true,
       transparent: true,
       opacity: 0.5,
     });
-    const wireCube = new THREE.Mesh(wireGeometry, wireMaterial);
-    scene.add(wireCube);
+    const wireTorus = new THREE.Mesh(wireGeometry, wireMaterial);
+    scene.add(wireTorus);
 
     // Luzes
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -84,11 +84,11 @@ export default function ThreeCube() {
       const scroll = scrollRef.current * 0.002;
 
       // Rotação baseada no scroll
-      cube.rotation.x = scroll + Date.now() * 0.0005;
-      cube.rotation.y = scroll * 1.5 + Date.now() * 0.0003;
+      torus.rotation.x = scroll + Date.now() * 0.0005;
+      torus.rotation.y = scroll * 1.5 + Date.now() * 0.0003;
 
-      wireCube.rotation.x = -scroll + Date.now() * 0.0003;
-      wireCube.rotation.y = -scroll * 1.5 + Date.now() * 0.0002;
+      wireTorus.rotation.x = -scroll + Date.now() * 0.0003;
+      wireTorus.rotation.y = -scroll * 1.5 + Date.now() * 0.0002;
 
       renderer.render(scene, camera);
     };
@@ -98,6 +98,7 @@ export default function ThreeCube() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("click", handleClick);
       container.removeChild(renderer.domElement);
       geometry.dispose();
       material.dispose();
