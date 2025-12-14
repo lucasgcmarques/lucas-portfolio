@@ -10,7 +10,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-geist-sans);
+  --font-display: var(--font-stretch-pro);
 }
 
 body {
@@ -70,8 +70,7 @@ html {
 }
 
 @keyframes scroll {
-  0%,
-  100% {
+  0% 100% {
     transform: translateY(0);
     opacity: 1;
   }
@@ -126,10 +125,15 @@ html {
   background: radial-gradient(circle, var(--tw-gradient-stops));
 }
 
-/* Font display class */
+/* Font display class - StretchPro */
 .font-display {
-  font-family: var(--font-display), system-ui, sans-serif;
-  font-weight: 700;
+  font-family: var(--font-stretch-pro), system-ui, sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  /* Ativa ligatures (letras conectadas como Uu, ff, fi, etc.) */
+  font-feature-settings: "liga" 1, "calt" 1, "dlig" 1;
+  font-variant-ligatures: common-ligatures discretionary-ligatures contextual;
 }
 
 /* Font mono class */

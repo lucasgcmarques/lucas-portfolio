@@ -78,9 +78,9 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-20">
           <Link
             href="/"
-            className="font-display text-2xl font-bold tracking-tight text-white hover:text-[#ff6b35] transition-colors"
+            className="font-display text-2xl font-bold tracking-tight text-white hover:text-[#ff6b35] transition-colors "
           >
-            Lucas<span className="text-[#ff6b35]">.</span>
+            LUucasS<span className="text-[#ff6b35]">.</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-1">

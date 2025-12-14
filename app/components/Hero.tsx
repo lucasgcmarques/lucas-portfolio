@@ -34,10 +34,10 @@ export default function Hero() {
 
           {/* Main heading */}
           <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white mb-6 animate-fade-in-up">
-            Creative
+            CreaAtive
             <br />
             <span className="text-transparent bg-clip-text bg-linear-to-r from-[#ff6b35] via-[#ff8555] to-[#4ecdc4]">
-              Developer
+              DeveloOper
             </span>
           </h1>
 

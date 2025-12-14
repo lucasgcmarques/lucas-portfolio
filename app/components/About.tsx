@@ -22,7 +22,7 @@ export default function About() {
       <div className="absolute top-0 right-0 w-1/2 h-full bg-linear-to-l from-[#ff6b35]/5 to-transparent" />
 
       <div className="max-w-7xl mx-auto px-6 md:px-12">
-        {/* Section header */}
+        {/* Section header */}´
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16">
           <div>
             <span className="text-[#ff6b35] font-mono text-sm tracking-widest uppercase mb-4 block">
@@ -41,7 +41,6 @@ export default function About() {
             beautiful, functional digital experiences that make a difference.
           </p>
         </div>
-
         <div className="grid md:grid-cols-2 gap-16">
           {/* Left column - About text */}
           <div className="space-y-8">
