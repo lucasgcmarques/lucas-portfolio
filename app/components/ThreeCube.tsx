@@ -3,6 +3,45 @@
 import { useRef, useEffect } from "react";
 import * as THREE from "three";
 
+// Função para criar torus com geometria de quads
+function createQuadTorus(radius = 2, tube = 0.6, segU = 32, segV = 16) {
+  const geometry = new THREE.BufferGeometry();
+  const vertices: number[] = [];
+  const indices: number[] = [];
+
+  for (let i = 0; i <= segU; i++) {
+    const u = (i / segU) * Math.PI * 2;
+    for (let j = 0; j <= segV; j++) {
+      const v = (j / segV) * Math.PI * 2;
+      const x = (radius + tube * Math.cos(v)) * Math.cos(u);
+      const y = (radius + tube * Math.cos(v)) * Math.sin(u);
+      const z = tube * Math.sin(v);
+      vertices.push(x, y, z);
+    }
+  }
+
+  for (let i = 0; i < segU; i++) {
+    for (let j = 0; j < segV; j++) {
+      const a = i * (segV + 1) + j;
+      const b = (i + 1) * (segV + 1) + j;
+      const c = (i + 1) * (segV + 1) + (j + 1);
+      const d = i * (segV + 1) + (j + 1);
+      // quad → 2 triângulos
+      indices.push(a, b, d);
+      indices.push(b, c, d);
+    }
+  }
+
+  geometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(vertices, 3)
+  );
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+
+  return geometry;
+}
+
 export default function ThreeCube() {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef(0);
@@ -34,20 +73,10 @@ export default function ThreeCube() {
     renderer.setPixelRatio(window.devicePixelRatio);
     container.appendChild(renderer.domElement);
 
-    // Torus
-    const geometry = new THREE.TorusGeometry(1.5, 0.5, 32, 100);
-    const material = new THREE.MeshStandardMaterial({
-      color: 0xff6b35,
-      metalness: 0.5,
-      roughness: 0.3,
-    });
-    const torus = new THREE.Mesh(geometry, material);
-    scene.add(torus);
-
-    // Wireframe Torus
-    const wireGeometry = new THREE.TorusGeometry(2, 0.4, 16, 50);
+    // Wireframe Torus com geometria customizada
+    const wireGeometry = createQuadTorus(2, 0.4, 32, 16);
     const wireMaterial = new THREE.MeshBasicMaterial({
-      color: 0x4ecdc4,
+      color: 0x8f8f8f,
       wireframe: true,
       transparent: true,
       opacity: 0.5,
@@ -83,10 +112,6 @@ export default function ThreeCube() {
 
       const scroll = scrollRef.current * 0.002;
 
-      // Rotação baseada no scroll
-      torus.rotation.x = scroll + Date.now() * 0.0005;
-      torus.rotation.y = scroll * 1.5 + Date.now() * 0.0003;
-
       wireTorus.rotation.x = -scroll + Date.now() * 0.0003;
       wireTorus.rotation.y = -scroll * 1.5 + Date.now() * 0.0002;
 
@@ -98,10 +123,7 @@ export default function ThreeCube() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleResize);
-      window.removeEventListener("click", handleClick);
       container.removeChild(renderer.domElement);
-      geometry.dispose();
-      material.dispose();
       wireGeometry.dispose();
       wireMaterial.dispose();
       renderer.dispose();
