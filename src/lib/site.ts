@@ -25,7 +25,6 @@ export const site = {
 
   /** Artistas, palcos e marcas que aparecem na Home e no Sobre. */
   credits: [
-    "Luísa Sonza no Coachella",
     "Rock in Rio",
     "Budah",
     "Duquesa",
