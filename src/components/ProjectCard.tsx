@@ -21,9 +21,7 @@ export function ProjectCard({ project, size = "default", priority = false, headi
           {project.thumbnail ? (
             <MediaFrame media={project.thumbnail} alt="" className={styles.media} priority={priority} />
           ) : (
-            <div className={styles.placeholder} aria-hidden="true">
-              <span className={styles.placeholderYear}>{project.year ?? ""}</span>
-            </div>
+            <div className={styles.placeholder} aria-hidden="true" />
           )}
         </div>
         <div className={styles.caption}>

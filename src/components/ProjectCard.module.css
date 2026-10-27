@@ -33,7 +33,7 @@
   filter: brightness(1);
 }
 
-/* Sem imagem: linhas de varredura e o ano, como uma tela esperando sinal. */
+/* Sem imagem: linhas de varredura, como uma tela esperando sinal. */
 .placeholder {
   position: absolute;
   inset: 0;
@@ -49,24 +49,8 @@
   );
 }
 
-.placeholderYear {
-  font-family: var(--font-display);
-  font-stretch: 150%;
-  font-weight: 800;
-  font-size: clamp(2.5rem, 7vw, 5rem);
-  line-height: 0.8;
-  color: #3d3d3a;
-  transition: color 300ms ease;
-}
 
-.wide .placeholderYear {
-  font-size: clamp(3rem, 12vw, 11rem);
-}
 
-.link:hover .placeholderYear,
-.link:focus-visible .placeholderYear {
-  color: var(--ash);
-}
 
 .caption {
   padding-top: 0.85rem;
