@@ -1,0 +1,60 @@
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: var(--space-l);
+}
+
+.filter {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  font-size: var(--step--1);
+}
+
+.filter:hover {
+  border-color: var(--ash);
+}
+
+.filter[aria-pressed="true"] {
+  background: var(--bone);
+  border-color: var(--bone);
+  color: var(--black);
+}
+
+.count {
+  color: var(--ash);
+  font-variant-numeric: tabular-nums;
+}
+
+.filter[aria-pressed="true"] .count {
+  color: #55554f;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(2rem, 1.5rem + 2vw, 3.5rem) clamp(1rem, 2vw, 2rem);
+}
+
+.empty {
+  color: var(--ash);
+  max-width: var(--measure);
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

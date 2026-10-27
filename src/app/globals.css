@@ -1,0 +1,173 @@
+:root {
+  /* Cor: o preto é o palco; a cor vem dos trabalhos. */
+  --black: #000000;
+  --bone: #ededE8;
+  --ash: #8a8a85;
+  --line: #262626;
+  --uv: #a496ff;
+
+  /* Tipo */
+  --font-display: var(--font-anybody), "Arial Narrow", system-ui, sans-serif;
+  --font-text: var(--font-atkinson), system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Escala (razão 1.25 sobre 17px) */
+  --step--1: 0.85rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.33rem;
+  --step-2: 1.66rem;
+  --step-3: clamp(1.75rem, 1.2rem + 2vw, 2.6rem);
+  --step-4: clamp(2.4rem, 1.4rem + 4.2vw, 4.6rem);
+  --step-5: clamp(3rem, 1rem + 8vw, 8.5rem);
+
+  /* Espaço */
+  --gutter: clamp(16px, 4vw, 56px);
+  --space-s: 0.75rem;
+  --space-m: 1.5rem;
+  --space-l: clamp(2.5rem, 2rem + 2vw, 4rem);
+  --space-xl: clamp(4rem, 3rem + 5vw, 9rem);
+  --measure: 66ch;
+  --max-width: 1680px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background: var(--black);
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--black);
+  color: var(--bone);
+  font-family: var(--font-text);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+img,
+video,
+iframe,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+ul,
+ol,
+dl,
+dd,
+figure,
+blockquote {
+  margin: 0;
+}
+
+ul[role="list"],
+ol[role="list"] {
+  list-style: none;
+  padding: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+::selection {
+  background: var(--bone);
+  color: var(--black);
+}
+
+:focus-visible {
+  outline: 2px solid var(--uv);
+  outline-offset: 3px;
+}
+
+/* Utilitários */
+
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--gutter);
+  top: -100px;
+  z-index: 100;
+  padding: 0.5rem 1rem;
+  background: var(--bone);
+  color: var(--black);
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+/* Títulos de página (Portfólio, Sobre, Contato) */
+.page-title {
+  font-family: var(--font-display);
+  font-stretch: 140%;
+  font-weight: 800;
+  font-size: var(--step-5);
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+  padding-top: clamp(7rem, 5rem + 6vw, 11rem);
+  padding-bottom: var(--space-l);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  font-weight: 700;
+  font-size: var(--step-2);
+  line-height: 1.1;
+  margin-bottom: var(--space-m);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

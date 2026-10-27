@@ -1,0 +1,68 @@
+.footer {
+  margin-top: var(--space-xl);
+  border-top: 1px solid var(--line);
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-l) var(--space-m);
+  padding-block: var(--space-l) var(--space-m);
+}
+
+.cta {
+  grid-column: 1 / -1;
+}
+
+.lead {
+  color: var(--ash);
+  margin-bottom: 0.5rem;
+}
+
+.email {
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  font-weight: 700;
+  /* cabe em uma linha: ~24 caracteres na largura expandida */
+  font-size: clamp(1.15rem, 4.6vw, 4.4rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.email:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+}
+
+.links a {
+  text-decoration: none;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+
+.legal {
+  color: var(--ash);
+  font-size: var(--step--1);
+  justify-self: end;
+  align-self: end;
+}
+
+@media (max-width: 640px) {
+  .inner {
+    grid-template-columns: 1fr;
+  }
+
+  .legal {
+    justify-self: start;
+  }
+}

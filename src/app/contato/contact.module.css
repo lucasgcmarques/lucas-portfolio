@@ -1,0 +1,73 @@
+.primary {
+  padding-bottom: var(--space-l);
+}
+
+.hint {
+  color: var(--ash);
+  max-width: 48ch;
+  margin-bottom: var(--space-m);
+}
+
+.email {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-stretch: 130%;
+  font-weight: 800;
+  font-size: clamp(1.15rem, 4.4vw, 5.6rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.email:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+}
+
+.copy {
+  margin-top: var(--space-m);
+}
+
+.channels {
+  border-top: 1px solid var(--line);
+}
+
+.channel {
+  display: grid;
+  grid-template-columns: minmax(8rem, 3fr) minmax(0, 9fr);
+  gap: var(--space-m);
+  align-items: baseline;
+  padding-block: 1.1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.channelLabel {
+  color: var(--ash);
+}
+
+.channelValue {
+  font-family: var(--font-display);
+  font-stretch: 120%;
+  font-weight: 600;
+  font-size: var(--step-2);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.channelValue:hover {
+  text-decoration: underline;
+}
+
+.location {
+  margin-top: var(--space-l);
+  color: var(--ash);
+  max-width: 52ch;
+}
+
+@media (max-width: 600px) {
+  .channel {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+}
