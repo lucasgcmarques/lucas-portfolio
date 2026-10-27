@@ -8,11 +8,11 @@ export const site = {
   wordmark: ["OLHO", "NEGRO"],
   person: "Lucas Guimarães",
   role: "VJ e artista visual",
-  city: "Brasília, Brasil",
+  city: "São Paulo, Brasil",
   description:
     "Lucas Guimarães (VJ Olho Negro) cria visuais ao vivo, video mapping, 3D e motion para shows, festivais, teatro e marcas.",
   intro:
-    "Visuais ao vivo, video mapping, 3D e motion para shows, festivais, teatro e marcas. Baseado em Brasília, trabalhando no Brasil e fora dele.",
+    "Visuais ao vivo, video mapping, 3D e motion para shows, festivais, teatro e marcas. Baseado em São Paulo, trabalhando no Brasil e fora dele.",
 
   contact: {
     email: "olhonegrostore@gmail.com",
@@ -36,7 +36,7 @@ export const site = {
   ],
 
   bio: [
-    "Sou Lucas Guimarães, VJ e artista visual de Brasília. Comecei em computação gráfica e 3D em 2014 e, desde então, fui levando isso para a pista, o palco e o espaço: visuais ao vivo, video mapping, cenografia digital e instalações que reagem ao público.",
+    "Sou Lucas Guimarães, VJ e artista visual. Comecei em computação gráfica e 3D em Brasília, em 2014, e hoje vivo em São Paulo. Desde então, fui levando isso para a pista, o palco e o espaço: visuais ao vivo, video mapping, cenografia digital e instalações que reagem ao público.",
     "Trabalho tanto na operação ao vivo, sincronizando imagem e música em tempo real, quanto em estúdio, produzindo conteúdo pré-renderizado para telas de LED de turnês e festivais.",
   ],
 
