@@ -1,18 +1,12 @@
 /**
- * Textos e dados fixos do site. Tudo o que muda com frequência (projetos)
- * vem do Notion; o que está aqui muda raramente.
+ * Dados fixos do site. Tudo o que muda com frequência (projetos) vem do
+ * Notion; os textos traduzidos (bio, cidade, chamadas) ficam em i18n.ts.
  */
 
 export const site = {
   name: "VJ Olho Negro",
   wordmark: ["OLHO", "NEGRO"],
   person: "Lucas Guimarães",
-  role: "VJ e artista visual",
-  city: "São Paulo, Brasil",
-  description:
-    "Lucas Guimarães (VJ Olho Negro) cria visuais ao vivo, video mapping, 3D e motion para shows, festivais, teatro e marcas.",
-  intro:
-    "Visuais ao vivo, video mapping, 3D e motion para shows, festivais, teatro e marcas. Baseado em São Paulo, trabalhando no Brasil e fora dele.",
 
   contact: {
     email: "olhonegrostore@gmail.com",
@@ -33,36 +27,6 @@ export const site = {
     "Sesc",
     "Coolritiba",
     "Museu da Língua Portuguesa",
-  ],
-
-  bio: [
-    "Sou Lucas Guimarães, VJ e artista visual. Comecei em computação gráfica e 3D em Brasília, em 2014, e hoje vivo em São Paulo. Desde então, fui levando isso para a pista, o palco e o espaço: visuais ao vivo, video mapping, cenografia digital e instalações que reagem ao público.",
-    "Trabalho tanto na operação ao vivo, sincronizando imagem e música em tempo real, quanto em estúdio, produzindo conteúdo pré-renderizado para telas de LED de turnês e festivais.",
-  ],
-
-  education: [
-    { title: "Análise e Desenvolvimento de Sistemas", place: "UDF Brasília", period: "2022–2024" },
-    { title: "Computação Gráfica", place: "IESB", period: "2015–2016" },
-  ],
-
-  tools: [
-    "TouchDesigner",
-    "Blender",
-    "Cinema 4D",
-    "3ds Max",
-    "After Effects",
-    "Premiere",
-    "Photoshop",
-    "Illustrator",
-  ],
-
-  skills: [
-    "Video mapping e projeção",
-    "Visuais em tempo real e sistemas interativos",
-    "Motion graphics e animação",
-    "Modelagem e render 3D",
-    "Cenografia digital e instalações",
-    "Sincronização com performance ao vivo",
   ],
 
   /**

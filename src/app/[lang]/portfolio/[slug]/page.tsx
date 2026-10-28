@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MediaFrame } from "@/components/MediaFrame";
+import { PixelLens } from "@/components/PixelLens";
 import { NotionBlocks } from "@/components/notion/NotionBlocks";
 import { VideoEmbed } from "@/components/notion/VideoEmbed";
 import { formatDateRange } from "@/lib/format";
+import { getDictionary, hasLocale, href, locales } from "@/lib/i18n";
 import { parseVideo } from "@/lib/media";
 import { getBlocks, getProjectBySlug, getProjects } from "@/lib/projects";
 import styles from "./project.module.css";
@@ -13,17 +15,18 @@ export const revalidate = 600;
 /** Projetos novos no Notion ganham página sem precisar de um novo deploy. */
 export const dynamicParams = true;
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = PageProps<"/[lang]/portfolio/[slug]">;
 
 export async function generateStaticParams() {
   const projects = await getProjects();
-  return projects.map((project) => ({ slug: project.slug }));
+  return locales.flatMap((lang) => projects.map((project) => ({ lang, slug: project.slug })));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { lang, slug } = await params;
+  if (!hasLocale(lang)) return {};
   const project = await getProjectBySlug(slug);
-  if (!project) return { title: "Projeto não encontrado" };
+  if (!project) return { title: getDictionary(lang).project.notFound };
 
   const image = project.thumbnail?.kind === "image" ? project.thumbnail.src : undefined;
   return {
@@ -38,7 +41,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProjectPage({ params }: Props) {
-  const { slug } = await params;
+  const { lang, slug } = await params;
+  if (!hasLocale(lang)) notFound();
+  const dict = getDictionary(lang);
+  const t = dict.project;
   const project = await getProjectBySlug(slug);
   if (!project) notFound();
 
@@ -48,13 +54,13 @@ export default async function ProjectPage({ params }: Props) {
   const older = index < projects.length - 1 ? projects[index + 1] : null;
 
   const video = parseVideo(project.videoUrl);
-  const when = formatDateRange(project.date, project.endDate);
+  const when = formatDateRange(project.date, project.endDate, dict.dateLocale);
 
   return (
     <article className="container">
       <header className={styles.header}>
         <p className={styles.back}>
-          <Link href="/portfolio">Portfólio</Link>
+          <Link href={href(lang, "/portfolio")}>{dict.portfolio.title}</Link>
         </p>
         <h1 className={styles.title}>{project.title}</h1>
         {project.description ? <p className={styles.lead}>{project.description}</p> : null}
@@ -62,25 +68,25 @@ export default async function ProjectPage({ params }: Props) {
         <dl className={styles.facts}>
           {when ? (
             <div>
-              <dt>Data</dt>
+              <dt>{t.date}</dt>
               <dd>{when}</dd>
             </div>
           ) : null}
           {project.location ? (
             <div>
-              <dt>Local</dt>
+              <dt>{t.location}</dt>
               <dd>{project.location}</dd>
             </div>
           ) : null}
           {project.category ? (
             <div>
-              <dt>Categoria</dt>
+              <dt>{t.category}</dt>
               <dd>{project.category}</dd>
             </div>
           ) : null}
           {project.tags.length > 0 ? (
             <div>
-              <dt>Tags</dt>
+              <dt>{t.tags}</dt>
               <dd>{project.tags.join(", ")}</dd>
             </div>
           ) : null}
@@ -88,9 +94,9 @@ export default async function ProjectPage({ params }: Props) {
       </header>
 
       {project.cover ? (
-        <div className={styles.cover}>
+        <PixelLens className={styles.cover} radius={240} pixel={16}>
           <MediaFrame media={project.cover} alt={project.title} className={styles.coverMedia} priority />
-        </div>
+        </PixelLens>
       ) : null}
 
       {video ? (
@@ -105,18 +111,18 @@ export default async function ProjectPage({ params }: Props) {
         </div>
       ) : null}
 
-      <nav className={styles.pager} aria-label="Outros projetos">
+      <nav className={styles.pager} aria-label={t.others}>
         {newer ? (
-          <Link href={`/portfolio/${newer.slug}`} className={styles.pagerLink} rel="prev">
-            <span className={styles.pagerLabel}>Mais recente</span>
+          <Link href={href(lang, `/portfolio/${newer.slug}`)} className={styles.pagerLink} rel="prev">
+            <span className={styles.pagerLabel}>{t.newer}</span>
             <span className={styles.pagerTitle}>{newer.title}</span>
           </Link>
         ) : (
           <span />
         )}
         {older ? (
-          <Link href={`/portfolio/${older.slug}`} className={`${styles.pagerLink} ${styles.pagerNext}`} rel="next">
-            <span className={styles.pagerLabel}>Anterior</span>
+          <Link href={href(lang, `/portfolio/${older.slug}`)} className={`${styles.pagerLink} ${styles.pagerNext}`} rel="next">
+            <span className={styles.pagerLabel}>{t.older}</span>
             <span className={styles.pagerTitle}>{older.title}</span>
           </Link>
         ) : null}

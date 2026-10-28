@@ -1,15 +1,17 @@
 import Link from "next/link";
+import { getDictionary, href, type Locale } from "@/lib/i18n";
 import { site } from "@/lib/site";
 import styles from "./SiteFooter.module.css";
 
-export function SiteFooter() {
+export function SiteFooter({ lang }: { lang: Locale }) {
+  const t = getDictionary(lang);
   const year = new Date().getFullYear();
 
   return (
     <footer className={styles.footer}>
       <div className={`container ${styles.inner}`}>
         <div className={styles.cta}>
-          <p className={styles.lead}>Tem um show, festival ou ativação vindo aí?</p>
+          <p className={styles.lead}>{t.footer.lead}</p>
           <a className={styles.email} href={`mailto:${site.contact.email}`}>
             {site.contact.email}
           </a>
@@ -34,12 +36,12 @@ export function SiteFooter() {
             </li>
           ))}
           <li>
-            <Link href="/contato">Todos os contatos</Link>
+            <Link href={href(lang, "/contato")}>{t.footer.allContacts}</Link>
           </li>
         </ul>
 
         <p className={styles.legal}>
-          {site.person}, {site.city}. © {year}
+          {site.person}, {t.city}. © {year}
         </p>
       </div>
     </footer>

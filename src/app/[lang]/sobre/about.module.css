@@ -1,0 +1,135 @@
+/* Topo em duas colunas: texto à esquerda, arte grande sangrando até a
+   borda direita da tela. */
+.top {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: var(--space-l) clamp(2rem, 5vw, 6rem);
+  align-items: start;
+}
+
+.bio {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  font-size: var(--step-0);
+  line-height: 1.6;
+}
+
+.bio > p {
+  max-width: 52ch;
+  text-wrap: pretty;
+}
+
+/* A arte fica por baixo de tudo (texto e header), começa abaixo da barra
+   do menu e pode sangrar até a borda direita da tela. */
+.art {
+  position: relative;
+  z-index: 0;
+  margin-right: calc(var(--gutter) * -1);
+  padding-top: calc(var(--header-h) + var(--space-s));
+  pointer-events: none;
+}
+
+.text {
+  position: relative;
+  z-index: 1;
+}
+
+.art img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 100svh;
+  object-fit: contain;
+  object-position: right top;
+}
+
+.muted {
+  display: block;
+  color: var(--ash);
+  font-size: var(--step--1);
+}
+
+.timeline {
+  padding-top: var(--space-xl);
+}
+
+.year {
+  display: grid;
+  grid-template-columns: minmax(5rem, 2fr) minmax(0, 10fr);
+  gap: var(--space-m);
+  padding-block: var(--space-m);
+  border-top: 1px solid var(--line);
+}
+
+.yearLabel {
+  font-family: var(--font-display);
+  font-stretch: 150%;
+  font-weight: 800;
+  font-size: var(--step-2);
+  line-height: 1;
+}
+
+.yearItems {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 1rem clamp(1rem, 3vw, 3rem);
+}
+
+.yearItems a {
+  text-decoration: none;
+}
+
+.yearItems a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .top {
+    grid-template-columns: 1fr;
+  }
+
+  /* No celular a arte fica abaixo do header (e do menu aberto). */
+  .art {
+    z-index: auto;
+    order: -1;
+    margin: 0 calc(var(--gutter) * -1);
+    padding-top: calc(var(--header-h) + var(--space-s));
+  }
+
+  .art img {
+    max-height: 80svh;
+    object-position: center;
+  }
+
+  .text :global(.page-title) {
+    padding-top: var(--space-m);
+  }
+}
+
+@media (max-width: 600px) {
+  .yearLabel {
+    font-size: var(--step-1);
+  }
+
+  .year {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+/* Forma abstrata solta por cima, no vão à direita do título. Absoluta para
+   não empurrar nada. */
+.bioDecor {
+  position: absolute;
+  top: calc(var(--header-h) + var(--space-m));
+  right: 0;
+  width: clamp(44px, 6vw, 96px);
+}
+
+@media (max-width: 900px) {
+  .bioDecor {
+    top: var(--space-m);
+    width: 40px;
+  }
+}

@@ -5,10 +5,15 @@
   --ash: #8a8a85;
   --line: #262626;
   --uv: #a496ff;
+  /* Vermelho do site: logo, botões e detalhes. É o teto: nenhum vermelho pode
+     ser mais forte (mais saturado ou mais vivo) que este; só igual ou mais suave. */
+  --red: #9c1d23;
 
   /* Tipo */
-  --font-display: var(--font-anybody), "Arial Narrow", system-ui, sans-serif;
-  --font-text: var(--font-atkinson), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--font-doto), ui-monospace, monospace;
+  --font-text: var(--font-martian), ui-monospace, "SFMono-Regular", Menlo, monospace;
+  /* OLHO NEGRO do hero: JRK variável (alternativas: --font-courbe, --font-jrk, --font-anybody). */
+  --font-wordmark: var(--font-jrk-olho-negro), var(--font-anybody), "Arial Narrow", system-ui, sans-serif;
 
   /* Escala (razão 1.25 sobre 17px) */
   --step--1: 0.85rem;
@@ -20,6 +25,8 @@
   --step-5: clamp(3rem, 1rem + 8vw, 8.5rem);
 
   /* Espaço */
+  /* Altura fixa do header: o hero começa exatamente onde ele termina. */
+  --header-h: 4rem;
   --gutter: clamp(16px, 4vw, 56px);
   --space-s: 0.75rem;
   --space-m: 1.5rem;
@@ -44,6 +51,8 @@ html {
 
 body {
   margin: 0;
+  /* Martian Mono um pouco condensada: lê melhor em blocos de texto. */
+  font-stretch: 87.5%;
   min-height: 100vh;
   background: var(--black);
   color: var(--bone);
@@ -159,6 +168,23 @@ button {
   font-size: var(--step-2);
   line-height: 1.1;
   margin-bottom: var(--space-m);
+}
+
+@media (max-width: 600px) {
+  :root {
+    --header-h: 3.25rem;
+  }
+
+  .page-title {
+    font-size: clamp(2.6rem, 14vw, 4rem);
+    line-height: 1;
+    padding-top: 6rem;
+    padding-bottom: var(--space-m);
+  }
+
+  .section-title {
+    font-size: var(--step-1);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

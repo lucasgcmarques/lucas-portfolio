@@ -1,18 +1,39 @@
+/* Colado no header e de borda a borda da tela, mesmo dentro do .container. */
 .hero {
-  padding-top: clamp(4.5rem, 3rem + 4vw, 6.5rem);
+  padding-top: var(--header-h);
+  width: 100vw;
+  margin-inline: calc(50% - 50vw);
 }
 
+/* A caixa tem a proporção do desenho (1000 × HEIGHT − CROP_TOP, ver
+   WordmarkLetters). No celular ela estica até a info de baixo e as letras
+   esticam junto na vertical (o SVG usa preserveAspectRatio="none"). */
 .stage {
   position: relative;
+  aspect-ratio: 1000 / 490;
+  background: #000;
   /* isola a mistura para que o "multiply" só enxergue a mídia */
   isolation: isolate;
   width: 100%;
   overflow: hidden;
+  /* Texto decorativo: sem seleção e com a bolinha vermelha no lugar do cursor. */
+  -webkit-user-select: none;
+  user-select: none;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .stage,
+  .stage * {
+    cursor: none;
+  }
+}
+
+/* As camadas sob a máscara (vídeo, pixels e .lift) param 1px antes das
+   bordas de cima e de baixo: quando a altura do SVG cai em fração de pixel,
+   a borda dele fica semitransparente e o vídeo vazava numa linha fina. */
 .media {
   position: absolute;
-  inset: 0;
+  inset: 1px 0;
   z-index: 0;
 }
 
@@ -23,18 +44,100 @@
 }
 
 .mask {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 1;
   width: 100%;
-  height: auto;
+  height: 100%;
   mix-blend-mode: multiply;
+}
+
+/* Círculo que acompanha o mouse, com borda em fade. */
+.pixels,
+.outline {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  -webkit-mask-image: radial-gradient(
+    circle var(--lens-r, 220px) at var(--lens-x, 50%) var(--lens-y, 50%),
+    #000 35%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    circle var(--lens-r, 220px) at var(--lens-x, 50%) var(--lens-y, 50%),
+    #000 35%,
+    transparent 100%
+  );
+}
+
+/* Vídeo pixelizado: fica sob a máscara, então só aparece dentro das letras. */
+.pixels {
+  inset: 1px 0;
+  height: auto;
+  z-index: 0;
+  image-rendering: pixelated;
+}
+
+/* Contorno fino das letras, por cima de tudo. */
+.outline {
+  z-index: 2;
+}
+
+.outline .letters {
+  fill: none;
+  stroke: var(--bone);
+  stroke-width: 1.5px;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Levanta os pretos do vídeo para um vinho bem escuro: dentro das letras o
+   vídeo nunca some no preto do fundo. Fica abaixo da máscara. */
+.lift {
+  position: absolute;
+  inset: 1px 0;
+  z-index: 0;
+  background: #1a0607;
+  mix-blend-mode: lighten;
+  pointer-events: none;
+}
+
+/* Bolinha vermelha que segue o mouse, com um leve atraso e borda suave. */
+.cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 12px 2px rgb(156 29 35 / 0.5);
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(var(--lens-x, 50%), var(--lens-y, 50%));
+  transition:
+    transform 0.15s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.3s ease;
+}
+
+.stage[data-lens] .cursor {
+  opacity: 1;
+}
+
+.stage[data-lens] .pixels,
+.stage[data-lens] .outline {
+  opacity: 1;
 }
 
 .letters {
   fill: #ffffff;
-  font-family: var(--font-display);
-  font-stretch: 150%;
-  font-weight: 900;
+  font-family: var(--font-wordmark);
+  font-variation-settings: "wght" 720, "wdth" 400, "DESC" 0;
   font-size: 300px;
   letter-spacing: -6px;
 }
@@ -57,5 +160,19 @@
   }
   to {
     transform: translate3d(12%, -4%, 0) scale(1.15);
+  }
+}
+
+@media (max-width: 720px) {
+  .hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stage {
+    flex: 1;
+    aspect-ratio: auto;
+    min-height: 40vw;
   }
 }

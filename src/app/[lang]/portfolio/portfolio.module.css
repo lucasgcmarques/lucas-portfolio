@@ -1,0 +1,18 @@
+/* Título à esquerda e a forma abstrata no canto direito, na mesma linha. */
+.head {
+  position: relative;
+}
+
+/* Absoluta: fica por cima, sem ocupar espaço no fluxo. */
+.headDecor {
+  position: absolute;
+  right: 0;
+  bottom: calc(var(--space-l) + 0.5rem);
+  width: clamp(160px, 32vw, 460px);
+}
+
+@media (max-width: 600px) {
+  .headDecor {
+    display: none;
+  }
+}

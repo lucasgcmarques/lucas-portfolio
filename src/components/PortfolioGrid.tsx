@@ -1,14 +1,16 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import type { Locale } from "@/lib/i18n";
 import type { Project } from "@/lib/projects";
 import { ProjectCard } from "./ProjectCard";
 import styles from "./PortfolioGrid.module.css";
 
-const ALL = "Todos";
+// null = todas as categorias.
+type Labels = { all: string; filterLabel: string; countWord: string; empty: string };
 
-export function PortfolioGrid({ projects }: { projects: Project[] }) {
-  const [active, setActive] = useState<string>(ALL);
+export function PortfolioGrid({ projects, lang, labels }: { projects: Project[]; lang: Locale; labels: Labels }) {
+  const [active, setActive] = useState<string | null>(null);
 
   const categories = useMemo(() => {
     const counts = new Map<string, number>();
@@ -18,21 +20,21 @@ export function PortfolioGrid({ projects }: { projects: Project[] }) {
     return [...counts.entries()].sort((a, b) => b[1] - a[1]);
   }, [projects]);
 
-  const visible = active === ALL ? projects : projects.filter((project) => project.category === active);
+  const visible = active === null ? projects : projects.filter((project) => project.category === active);
 
   return (
     <>
       {categories.length > 1 ? (
-        <div className={styles.filters} role="group" aria-label="Filtrar por categoria">
-          {[[ALL, projects.length] as const, ...categories].map(([name, count]) => (
+        <div className={styles.filters} role="group" aria-label={labels.filterLabel}>
+          {[[null, projects.length] as const, ...categories].map(([name, count]) => (
             <button
-              key={name}
+              key={name ?? "all"}
               type="button"
               className={styles.filter}
               aria-pressed={active === name}
               onClick={() => setActive(name)}
             >
-              {name}
+              {name ?? labels.all}
               <span className={styles.count}>{count}</span>
             </button>
           ))}
@@ -40,18 +42,18 @@ export function PortfolioGrid({ projects }: { projects: Project[] }) {
       ) : null}
 
       <p className="visually-hidden" aria-live="polite">
-        {visible.length} projetos
+        {visible.length} {labels.countWord}
       </p>
 
       {visible.length > 0 ? (
         <div className={styles.grid}>
           {visible.map((project, index) => (
-            <ProjectCard key={project.id} project={project} priority={index < 3} headingLevel="h2" />
+            <ProjectCard key={project.id} project={project} lang={lang} priority={index < 3} headingLevel="h2" />
           ))}
         </div>
       ) : (
         <p className={styles.empty}>
-          Nenhum projeto publicado ainda. Adicione projetos ao database VJ Projects no Notion.
+          {labels.empty}
         </p>
       )}
     </>

@@ -1,0 +1,7 @@
+.decor {
+  display: block;
+  background: var(--red);
+  pointer-events: none;
+  -webkit-mask: var(--decor) center / 100% 100% no-repeat;
+  mask: var(--decor) center / 100% 100% no-repeat;
+}

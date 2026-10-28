@@ -1,0 +1,40 @@
+.lens {
+  position: relative;
+}
+
+/* Círculo que acompanha o mouse, com borda em fade (igual ao hero). */
+.pixels,
+.border {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  -webkit-mask-image: radial-gradient(
+    circle var(--lens-r) at var(--lens-x, 50%) var(--lens-y, 50%),
+    #000 35%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    circle var(--lens-r) at var(--lens-x, 50%) var(--lens-y, 50%),
+    #000 35%,
+    transparent 100%
+  );
+}
+
+.pixels {
+  image-rendering: pixelated;
+}
+
+/* Contorno fino da caixa, aceso só perto do cursor. */
+.border {
+  box-sizing: border-box;
+  border: 1px solid var(--bone);
+}
+
+.lens[data-lens] .pixels,
+.lens[data-lens] .border {
+  opacity: 1;
+}

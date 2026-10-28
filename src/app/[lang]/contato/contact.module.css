@@ -70,4 +70,37 @@
     grid-template-columns: 1fr;
     gap: 0.25rem;
   }
+
+  .channelValue {
+    font-size: var(--step-1);
+  }
+
+  .email {
+    font-size: clamp(1rem, 5.6vw, 1.6rem);
+  }
+}
+
+/* Faixa da tipografia pixelada, centralizada e um pouco mais estreita que
+   a página, com folga igual dos dois lados. */
+.band {
+  width: min(100%, 1180px);
+  margin: var(--space-xl) auto var(--space-l);
+}
+
+/* Forma fina e alta no canto direito, ao lado do título e do e-mail. */
+.page {
+  position: relative;
+}
+
+.pageDecor {
+  position: absolute;
+  top: calc(var(--header-h) + var(--space-l));
+  right: var(--gutter);
+  width: clamp(24px, 2.6vw, 40px);
+}
+
+@media (max-width: 720px) {
+  .pageDecor {
+    display: none;
+  }
 }
