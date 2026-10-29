@@ -1,5 +1,6 @@
 import type { NotionBlock, RichText } from "./notion/types";
 import type { Project } from "./projects";
+import { getLocalMedia } from "./local-media";
 import { slugify } from "./slug";
 
 /**
@@ -37,9 +38,12 @@ const rows: Row[] = [
 
 const FEATURED = new Set([1, 10, 4, 8, 12]);
 
-export const sampleProjects: Project[] = rows.map(([title, category, date, location, description], index) => ({
+export const sampleProjects: Project[] = rows.map(([title, category, date, location, description], index) => {
+  const slug = slugify(title);
+  const local = getLocalMedia(slug);
+  return {
   id: `sample-${index}`,
-  slug: slugify(title),
+  slug,
   title,
   description,
   category,
@@ -50,9 +54,12 @@ export const sampleProjects: Project[] = rows.map(([title, category, date, locat
   location,
   featured: FEATURED.has(index),
   cover: null,
-  thumbnail: null,
+  thumbnail: local.photos[0] ? { kind: "image" as const, src: local.photos[0].src } : null,
   videoUrl: null,
-}));
+  photos: local.photos,
+  instagram: local.instagram,
+  };
+});
 
 function text(content: string): RichText[] {
   return [

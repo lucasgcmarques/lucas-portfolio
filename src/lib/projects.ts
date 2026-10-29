@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { getLocalMedia } from "./local-media";
 import { isVideoFileName, parseVideo, vimeoThumbnail } from "./media";
 import { mapWithConcurrency, notionConfigured, notionRequest } from "./notion/client";
 import {
@@ -48,6 +49,10 @@ export type Project = {
   /** Imagem usada na grade: a capa ou a primeira mídia do conteúdo. */
   thumbnail: Media | null;
   videoUrl: string | null;
+  /** Fotos guardadas no site (public/projetos). */
+  photos: { src: string; alt: string }[];
+  /** Links de posts/reels do Instagram escolhidos para o projeto. */
+  instagram: string[];
 };
 
 /* ---------- URLs de mídia ---------- */
@@ -78,7 +83,15 @@ function fileToMedia(file: NotionFile, proxied: string): Media {
 
 /* ---------- Mapeamento página → projeto ---------- */
 
-function pageToProject(page: NotionPage): Omit<Project, "slug" | "thumbnail"> & { slugOverride: string } {
+/** Coluna Instagram: aceita tipo URL ou texto, com um ou mais links. */
+function getInstagramLinks(properties: NotionPage["properties"]): string[] {
+  const raw = [getUrl(properties, PROPS.instagram), getText(properties, PROPS.instagram)].filter(Boolean).join(" ");
+  return raw.split(/[\s,]+/).filter((link) => parseVideo(link)?.provider === "instagram");
+}
+
+function pageToProject(
+  page: NotionPage,
+): Omit<Project, "slug" | "thumbnail" | "photos"> & { slugOverride: string } {
   const p = page.properties;
   const date = getDate(p, PROPS.date);
   const coverFiles = getFiles(p, PROPS.cover);
@@ -104,6 +117,7 @@ function pageToProject(page: NotionPage): Omit<Project, "slug" | "thumbnail"> & 
     featured: getCheckbox(p, PROPS.featured),
     cover,
     videoUrl: getUrl(p, PROPS.video),
+    instagram: getInstagramLinks(p),
   };
 }
 
@@ -133,6 +147,7 @@ async function thumbnailFromVideoUrl(url: string | null | undefined): Promise<Me
   if (!video) return null;
   if (video.provider === "youtube" || video.provider === "drive") return { kind: "image", src: video.thumbnail };
   if (video.provider === "file") return { kind: "video", src: video.src };
+  if (video.provider === "instagram") return null;
   const thumb = await vimeoThumbnail(video.pageUrl);
   return thumb ? { kind: "image", src: thumb } : null;
 }
@@ -202,12 +217,20 @@ export const getProjects = cache(async (): Promise<Project[]> => {
 
   const slugs = uniqueSlugs(visible.map((p) => ({ id: p.id, title: p.title, override: p.slugOverride })));
 
-  return mapWithConcurrency(visible, 3, async ({ slugOverride: _slugOverride, ...project }) => {
-    let thumbnail = project.cover?.kind === "image" ? project.cover : null;
+  return mapWithConcurrency(visible, 3, async ({ slugOverride: _slugOverride, ...notionProject }) => {
+    const slug = slugs.get(notionProject.id) as string;
+    const local = getLocalMedia(slug);
+    const project = {
+      ...notionProject,
+      photos: local.photos,
+      instagram: [...new Set([...notionProject.instagram, ...local.instagram])],
+    };
+    const localCover: Media | null = local.photos[0] ? { kind: "image", src: local.photos[0].src } : null;
+    let thumbnail = project.cover?.kind === "image" ? project.cover : localCover;
     if (!thumbnail) thumbnail = await thumbnailFromVideoUrl(project.videoUrl);
     if (!thumbnail) thumbnail = await thumbnailFromBlocks(await getBlocks(project.id));
     if (!thumbnail && project.cover) thumbnail = project.cover;
-    return { ...project, slug: slugs.get(project.id) as string, thumbnail };
+    return { ...project, slug, thumbnail };
   });
 });
 

@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MediaFrame } from "@/components/MediaFrame";
+import { ProjectMedia } from "@/components/ProjectMedia";
 import { PixelLens } from "@/components/PixelLens";
 import { NotionBlocks } from "@/components/notion/NotionBlocks";
 import { VideoEmbed } from "@/components/notion/VideoEmbed";
 import { formatDateRange } from "@/lib/format";
 import { getDictionary, hasLocale, href, locales } from "@/lib/i18n";
 import { parseVideo } from "@/lib/media";
-import { getBlocks, getProjectBySlug, getProjects } from "@/lib/projects";
+import { getBlocks, getProjectBySlug, getProjects, type Media } from "@/lib/projects";
 import styles from "./project.module.css";
 
 export const revalidate = 600;
@@ -54,6 +55,10 @@ export default async function ProjectPage({ params }: Props) {
   const older = index < projects.length - 1 ? projects[index + 1] : null;
 
   const video = parseVideo(project.videoUrl);
+  // Sem Capa no Notion, a primeira foto guardada no site vira a capa.
+  const localCover: Media | null =
+    !project.cover && project.photos[0] ? { kind: "image", src: project.photos[0].src } : null;
+  const cover = project.cover ?? localCover;
   const when = formatDateRange(project.date, project.endDate, dict.dateLocale);
 
   return (
@@ -93,9 +98,9 @@ export default async function ProjectPage({ params }: Props) {
         </dl>
       </header>
 
-      {project.cover ? (
+      {cover ? (
         <PixelLens className={styles.cover} radius={240} pixel={16}>
-          <MediaFrame media={project.cover} alt={project.title} className={styles.coverMedia} priority />
+          <MediaFrame media={cover} alt={project.photos[0]?.alt || project.title} className={styles.coverMedia} priority />
         </PixelLens>
       ) : null}
 
@@ -110,6 +115,12 @@ export default async function ProjectPage({ params }: Props) {
           <NotionBlocks blocks={blocks} />
         </div>
       ) : null}
+
+      <ProjectMedia
+        project={project}
+        skipFirstPhoto={Boolean(localCover)}
+        labels={{ instagram: t.instagram, photos: t.photos, openInstagram: t.openInstagram }}
+      />
 
       <nav className={styles.pager} aria-label={t.others}>
         {newer ? (

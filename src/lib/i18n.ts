@@ -70,6 +70,9 @@ const pt = {
     older: "Anterior",
     video: "Vídeo do projeto",
     download: "Baixar arquivo",
+    instagram: "No Instagram",
+    photos: "Fotos",
+    openInstagram: "Abrir no Instagram",
   },
 
   about: {
@@ -155,6 +158,9 @@ const en: Dictionary = {
     older: "Older",
     video: "Project video",
     download: "Download file",
+    instagram: "On Instagram",
+    photos: "Photos",
+    openInstagram: "Open on Instagram",
   },
 
   about: {
@@ -238,6 +244,9 @@ const fr: Dictionary = {
     older: "Précédent",
     video: "Vidéo du projet",
     download: "Télécharger le fichier",
+    instagram: "Sur Instagram",
+    photos: "Photos",
+    openInstagram: "Ouvrir sur Instagram",
   },
 
   about: {

@@ -1,0 +1,73 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  padding-top: var(--space-xl);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  font-weight: 700;
+  font-size: var(--step-2);
+  line-height: 1.1;
+  margin-bottom: var(--space-m);
+}
+
+/* Fotos em colunas, cada uma na proporção original. */
+.gallery {
+  columns: 3 320px;
+  column-gap: clamp(0.75rem, 1.5vw, 1.25rem);
+}
+
+.photoLink {
+  display: block;
+  break-inside: avoid;
+  margin-bottom: clamp(0.75rem, 1.5vw, 1.25rem);
+}
+
+.photo {
+  width: 100%;
+  height: auto;
+  filter: brightness(0.9);
+  transition: filter 300ms ease;
+}
+
+.photoLink:hover .photo,
+.photoLink:focus-visible .photo {
+  filter: brightness(1);
+}
+
+.instagramGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: clamp(1rem, 2vw, 2rem);
+  align-items: start;
+}
+
+.instagram {
+  margin: 0;
+  max-width: 540px;
+}
+
+.instagramFrame {
+  display: block;
+  width: 100%;
+  height: 720px;
+  border: 0;
+  border-radius: 4px;
+  background: #ffffff;
+}
+
+.instagramCaption {
+  margin-top: 0.6rem;
+  font-size: var(--step--1);
+}
+
+.instagramCaption a {
+  color: var(--ash);
+}
+
+.instagramCaption a:hover {
+  color: var(--bone);
+}

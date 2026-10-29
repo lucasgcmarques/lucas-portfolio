@@ -4,6 +4,7 @@ export type VideoSource =
   | { provider: "youtube"; id: string; embedUrl: string; thumbnail: string }
   | { provider: "vimeo"; id: string; embedUrl: string; pageUrl: string }
   | { provider: "drive"; id: string; embedUrl: string; thumbnail: string }
+  | { provider: "instagram"; id: string; embedUrl: string; pageUrl: string }
   | { provider: "file"; src: string };
 
 const VIDEO_FILE = /\.(mp4|webm|mov|m4v)(\?|#|$)/i;
@@ -62,6 +63,19 @@ export function parseVideo(raw: string | null | undefined): VideoSource | null {
       id,
       embedUrl: `https://player.vimeo.com/video/${id}?${params.toString()}`,
       pageUrl: hash ? `https://vimeo.com/${id}/${hash}` : `https://vimeo.com/${id}`,
+    };
+  }
+
+  if (host === "instagram.com" || host === "instagr.am") {
+    const match = url.pathname.match(/^\/(?:[\w.]+\/)?(p|reel|reels|tv)\/([\w-]+)/);
+    if (!match) return null;
+    const kind = match[1] === "reels" ? "reel" : match[1];
+    const id = match[2];
+    return {
+      provider: "instagram",
+      id,
+      embedUrl: `https://www.instagram.com/${kind}/${id}/embed/captioned/`,
+      pageUrl: `https://www.instagram.com/${kind}/${id}/`,
     };
   }
 

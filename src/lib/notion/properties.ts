@@ -22,6 +22,8 @@ export const PROPS = {
   slug: "Slug",
   /** Opcional (URL): link de vídeo principal (YouTube, Vimeo, Drive ou .mp4). */
   video: "Vídeo",
+  /** Opcional (URL ou texto): um ou mais links de posts/reels do Instagram. */
+  instagram: "Instagram",
 } as const;
 
 export function plainText(rich: RichText[] | undefined): string {
