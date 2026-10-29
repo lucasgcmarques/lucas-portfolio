@@ -243,7 +243,6 @@ export function WordmarkLetters({ lines }: { lines: [string, string] }) {
   return (
     <>
       <canvas ref={canvasRef} className={styles.pixels} aria-hidden="true" />
-      <div className={styles.lift} aria-hidden="true" />
       <div className={styles.cursor} aria-hidden="true" />
       <svg
         ref={svgRef}

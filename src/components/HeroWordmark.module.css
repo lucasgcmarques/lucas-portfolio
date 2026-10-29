@@ -94,15 +94,11 @@
   vector-effect: non-scaling-stroke;
 }
 
-/* Levanta os pretos do vídeo para um vinho bem escuro: dentro das letras o
-   vídeo nunca some no preto do fundo. Fica abaixo da máscara. */
-.lift {
-  position: absolute;
-  inset: 1px 0;
-  z-index: 0;
-  background: #1a0607;
-  mix-blend-mode: lighten;
-  pointer-events: none;
+/* Sem tinta vermelha dentro das letras: o vídeo atual já vem avermelhado no
+   arquivo, então ele e a versão pixelizada aparecem em tons de cinza. */
+.mediaFill,
+.pixels {
+  filter: grayscale(1);
 }
 
 /* Bolinha vermelha que segue o mouse, com um leve atraso e borda suave. */
