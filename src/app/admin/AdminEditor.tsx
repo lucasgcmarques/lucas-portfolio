@@ -272,7 +272,7 @@ function ProjectsEditor({ projects, onChange }: { projects: ProjectEntry[]; onCh
                 <span>{p.title || "Sem título"}</span>
                 <span className={styles.muted}>
                   {p.date.slice(0, 4)}
-                  {p.published ? "" : " · rascunho"}
+                  {p.published ? "" : " · oculto"}
                   {p.featured ? " · destaque" : ""}
                 </span>
               </button>
@@ -292,7 +292,7 @@ function ProjectsEditor({ projects, onChange }: { projects: ProjectEntry[]; onCh
           <div className={styles.checks}>
             <label>
               <input type="checkbox" checked={project.published} onChange={(e) => update({ published: e.target.checked })} />
-              Publicado
+              Publicado (desmarque para ocultar do site)
             </label>
             <label>
               <input type="checkbox" checked={project.featured} onChange={(e) => update({ featured: e.target.checked })} />
@@ -398,7 +398,10 @@ function ArtEditor({ works, onChange }: { works: ArtEntry[]; onChange: (w: ArtEn
   return (
     <section>
       <div className={styles.row}>
-        <h2 className={styles.sectionTitle}>Art · {works.length} trabalhos</h2>
+        <h2 className={styles.sectionTitle}>
+          Art · {works.length} trabalhos
+          {works.some((w) => w.hidden) ? ` (${works.filter((w) => w.hidden).length} ocultos)` : ""}
+        </h2>
         <label className={styles.primary}>
           {busy ?? "+ Enviar imagens e vídeos"}
           <input
@@ -415,8 +418,8 @@ function ArtEditor({ works, onChange }: { works: ArtEntry[]; onChange: (w: ArtEn
       <p className={styles.muted}>A ordem aqui é a ordem do mosaico. Use as setas para mudar.</p>
       <ul role="list" className={styles.cards}>
         {works.map((work, index) => (
-          <li key={work.id} className={styles.cardItem}>
-            <Preview src={work.src} />
+          <li key={work.id} className={styles.cardItem} data-hidden={work.hidden || undefined}>
+            <Preview src={work.src} poster={work.poster} />
             <div className={styles.cardFields}>
               <TextField label="Título (opcional)" value={work.title} onChange={(title) => update(work.id, { title })} />
               <TextField label="Descrição (acessibilidade)" value={work.alt} onChange={(alt) => update(work.id, { alt })} />
@@ -443,6 +446,18 @@ function ArtEditor({ works, onChange }: { works: ArtEntry[]; onChange: (w: ArtEn
                   </select>
                 </label>
               </div>
+              {work.kind === "video" ? (
+                <MediaField
+                  label="Miniatura (quadro do vídeo mostrado enquanto ele carrega)"
+                  value={work.poster ?? ""}
+                  accept="image/*"
+                  onChange={(poster) => update(work.id, { poster })}
+                />
+              ) : null}
+              <label className={styles.check}>
+                <input type="checkbox" checked={Boolean(work.hidden)} onChange={(e) => update(work.id, { hidden: e.target.checked })} />
+                Ocultar no site
+              </label>
               <div className={styles.row}>
                 <span>
                   <button type="button" className={styles.ghost} onClick={() => onChange(move(works, index, -1))} aria-label="Subir">
@@ -530,9 +545,10 @@ function TextField({
   );
 }
 
-function Preview({ src }: { src: string }) {
+function Preview({ src, poster }: { src: string; poster?: string }) {
   if (!src) return <div className={styles.preview} />;
-  if (isVideoUrl(src)) return <video className={styles.preview} src={src} muted loop playsInline preload="metadata" />;
+  if (isVideoUrl(src))
+    return <video className={styles.preview} src={src} poster={poster} muted loop playsInline preload={poster ? "none" : "metadata"} />;
   // eslint-disable-next-line @next/next/no-img-element -- prévia no CMS
   return <img className={styles.preview} src={src} alt="" loading="lazy" />;
 }
@@ -616,7 +632,7 @@ function PhotosField({ photos, onChange }: { photos: Photo[]; onChange: (photos:
       <legend>Fotos ({photos.length})</legend>
       <ul role="list" className={styles.photos}>
         {photos.map((photo, index) => (
-          <li key={`${photo.src}-${index}`} className={styles.photo}>
+          <li key={`${photo.src}-${index}`} className={styles.photo} data-hidden={photo.hidden || undefined}>
             <Preview src={photo.src} />
             <input
               placeholder="Descrição da foto"
@@ -629,6 +645,14 @@ function PhotosField({ photos, onChange }: { photos: Photo[]; onChange: (photos:
               </button>
               <button type="button" className={styles.ghost} onClick={() => onChange(move(photos, index, 1))} aria-label="Depois">
                 →
+              </button>
+              <button
+                type="button"
+                className={styles.ghost}
+                aria-pressed={Boolean(photo.hidden)}
+                onClick={() => onChange(photos.map((p, i) => (i === index ? { ...p, hidden: !p.hidden } : p)))}
+              >
+                {photo.hidden ? "Mostrar" : "Ocultar"}
               </button>
               <button type="button" className={styles.danger} onClick={() => onChange(photos.filter((_, i) => i !== index))}>
                 ×

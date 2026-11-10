@@ -259,6 +259,31 @@
   color: var(--ash);
 }
 
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+.check input {
+  width: auto;
+}
+
+/* Itens ocultos continuam no CMS, só apagados. */
+[data-hidden] .preview {
+  opacity: 0.3;
+}
+
+[data-hidden] {
+  border-style: dashed;
+}
+
+.ghost[aria-pressed="true"] {
+  border-color: var(--ash);
+  color: var(--ash);
+}
+
 .error {
   color: #e0767b;
 }

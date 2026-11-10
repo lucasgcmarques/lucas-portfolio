@@ -16,6 +16,8 @@ export type ArtWork = {
   alt: string;
   title?: string;
   size?: "small" | "wide" | "tall" | "large";
+  /** Quadro do vídeo mostrado enquanto ele carrega. */
+  poster?: string;
 };
 
 export const artWorks: ArtWork[] = [

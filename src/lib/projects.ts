@@ -218,7 +218,9 @@ export const getProjects = cache(async (): Promise<Project[]> => {
 });
 
 function projectsFromContent(entries: ProjectEntry[]): Project[] {
-  const visible = entries.filter((entry) => entry.published && entry.title.trim());
+  const visible = entries
+    .filter((entry) => entry.published && entry.title.trim())
+    .map((entry) => ({ ...entry, photos: entry.photos.filter((photo) => !photo.hidden) }));
   const slugs = uniqueSlugs(visible.map((e) => ({ id: e.id, title: e.title, override: e.slug || undefined })));
   return visible
     .map((entry): Project => {

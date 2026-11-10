@@ -74,7 +74,7 @@ export function ArtMosaic({ works, labels }: { works: ArtWork[]; labels: Labels 
             >
               <PixelLens className={styles.frame} radius={180} pixel={12}>
                 {work.kind === "video" ? (
-                  <ArtVideo src={work.src} label={work.alt} />
+                  <ArtVideo src={work.src} poster={work.poster} label={work.alt} />
                 ) : (
                   // eslint-disable-next-line @next/next/no-img-element -- arquivos estáticos do próprio site
                   <img className={styles.media} src={work.src} alt={work.alt} loading="lazy" decoding="async" />
@@ -97,7 +97,7 @@ export function ArtMosaic({ works, labels }: { works: ArtWork[]; labels: Labels 
 }
 
 /** Vídeo em loop, sem som, que só toca enquanto está na tela. */
-function ArtVideo({ src, label }: { src: string; label: string }) {
+function ArtVideo({ src, poster, label }: { src: string; poster?: string; label: string }) {
   const ref = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -117,10 +117,12 @@ function ArtVideo({ src, label }: { src: string; label: string }) {
       ref={ref}
       className={styles.media}
       src={src}
+      poster={poster}
       muted
       loop
       playsInline
-      preload="metadata"
+      // Com miniatura, só baixa o vídeo quando ele aparece na tela.
+      preload={poster ? "none" : "metadata"}
       aria-label={label}
     />
   );

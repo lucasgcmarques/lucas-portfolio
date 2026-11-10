@@ -39,7 +39,7 @@ export async function getArtWorks(): Promise<ArtWork[]> {
   const content = await getContent();
   if (!content) return artWorks;
   return content.art
-    .filter((work) => work.src)
+    .filter((work) => work.src && !work.hidden)
     .map((work) => ({
       src: work.src,
       kind: work.kind,
@@ -47,6 +47,7 @@ export async function getArtWorks(): Promise<ArtWork[]> {
       alt: work.alt,
       title: work.title || undefined,
       size: work.size,
+      poster: work.poster || undefined,
     }));
 }
 

@@ -8,7 +8,12 @@
 
 import type { ArtCategory } from "./art";
 
-export type Photo = { src: string; alt: string };
+export type Photo = {
+  src: string;
+  alt: string;
+  /** Fica guardada no CMS, mas não aparece no site. */
+  hidden?: boolean;
+};
 
 export type ProjectEntry = {
   id: string;
@@ -43,6 +48,10 @@ export type ArtEntry = {
   alt: string;
   title: string;
   size: "small" | "wide" | "tall" | "large";
+  /** Quadro do vídeo mostrado enquanto ele carrega. */
+  poster?: string;
+  /** Fica guardado no CMS, mas não aparece no site. */
+  hidden?: boolean;
 };
 
 export type Localized = { pt: string; en: string; fr: string };
