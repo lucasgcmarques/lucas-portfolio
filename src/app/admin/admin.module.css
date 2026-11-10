@@ -271,11 +271,12 @@
 }
 
 /* Itens ocultos continuam no CMS, só apagados. */
-[data-hidden] .preview {
+.cardItem[data-hidden] .preview,
+.photo[data-hidden] .preview {
   opacity: 0.3;
 }
 
-[data-hidden] {
+.cardItem[data-hidden] {
   border-style: dashed;
 }
 
