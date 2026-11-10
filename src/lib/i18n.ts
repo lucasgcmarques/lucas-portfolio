@@ -38,7 +38,7 @@ const pt = {
   disciplines: ["VJ", "Performance", "Arte visual", "Programação", "Animação", "Design"],
   tagline: "Criação sem limites.",
 
-  nav: { portfolio: "Portfólio", about: "Sobre", contact: "Contato", main: "Principal", language: "Idioma", openMenu: "Abrir menu", closeMenu: "Fechar menu" },
+  nav: { portfolio: "Portfólio", art: "Art", about: "Sobre", contact: "Contato", main: "Principal", language: "Idioma", openMenu: "Abrir menu", closeMenu: "Fechar menu" },
   skipLink: "Pular para o conteúdo",
   homeLabel: "VJ Olho Negro, página inicial",
 
@@ -57,6 +57,15 @@ const pt = {
     filterLabel: "Filtrar por categoria",
     countWord: "projetos",
     empty: "Nenhum projeto publicado ainda. Adicione projetos ao database VJ Projects no Notion.",
+  },
+
+  art: {
+    title: "Art",
+    description: "Fotografia de projeção, videoarte, arte digital e música de Lucas Guimarães (VJ Olho Negro).",
+    all: "Tudo",
+    filterLabel: "Filtrar por categoria",
+    countWord: "trabalhos",
+    empty: "Em breve.",
   },
 
   project: {
@@ -126,7 +135,7 @@ const en: Dictionary = {
   disciplines: ["VJ", "Performance", "Visual Art", "Programming", "Animation", "Design"],
   tagline: "Creation beyond limits.",
 
-  nav: { portfolio: "Portfolio", about: "About", contact: "Contact", main: "Main", language: "Language", openMenu: "Open menu", closeMenu: "Close menu" },
+  nav: { portfolio: "Portfolio", art: "Art", about: "About", contact: "Contact", main: "Main", language: "Language", openMenu: "Open menu", closeMenu: "Close menu" },
   skipLink: "Skip to content",
   homeLabel: "VJ Olho Negro, home",
 
@@ -145,6 +154,15 @@ const en: Dictionary = {
     filterLabel: "Filter by category",
     countWord: "projects",
     empty: "No projects published yet.",
+  },
+
+  art: {
+    title: "Art",
+    description: "Projection photography, video art, digital art and music by Lucas Guimarães (VJ Olho Negro).",
+    all: "All",
+    filterLabel: "Filter by category",
+    countWord: "works",
+    empty: "Coming soon.",
   },
 
   project: {
@@ -212,7 +230,7 @@ const fr: Dictionary = {
   disciplines: ["VJ", "Performance", "Art visuel", "Programmation", "Animation", "Design"],
   tagline: "Création sans limites.",
 
-  nav: { portfolio: "Portfolio", about: "À propos", contact: "Contact", main: "Principal", language: "Langue", openMenu: "Ouvrir le menu", closeMenu: "Fermer le menu" },
+  nav: { portfolio: "Portfolio", art: "Art", about: "À propos", contact: "Contact", main: "Principal", language: "Langue", openMenu: "Ouvrir le menu", closeMenu: "Fermer le menu" },
   skipLink: "Aller au contenu",
   homeLabel: "VJ Olho Negro, accueil",
 
@@ -231,6 +249,15 @@ const fr: Dictionary = {
     filterLabel: "Filtrer par catégorie",
     countWord: "projets",
     empty: "Aucun projet publié pour l'instant.",
+  },
+
+  art: {
+    title: "Art",
+    description: "Photographie de projection, art vidéo, art numérique et musique de Lucas Guimarães (VJ Olho Negro).",
+    all: "Tout",
+    filterLabel: "Filtrer par catégorie",
+    countWord: "œuvres",
+    empty: "Bientôt.",
   },
 
   project: {

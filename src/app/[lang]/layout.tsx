@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Doto, Martian_Mono } from "next/font/google";
 import localFont from "next/font/local";
+import { DotField } from "@/components/DotField";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { site, siteUrl } from "@/lib/site";
@@ -98,6 +99,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   return (
     <html lang={t.htmlLang} className={`${anybody.variable} ${jrkOlhoNegro.variable} ${jrk.variable} ${courbe.variable} ${martian.variable} ${doto.variable}`}>
       <body>
+        <DotField />
         <a className="skip-link" href="#conteudo">
           {t.skipLink}
         </a>

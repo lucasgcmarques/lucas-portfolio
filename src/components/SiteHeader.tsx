@@ -10,6 +10,7 @@ type Props = {
   lang: Locale;
   labels: {
     portfolio: string;
+    art: string;
     about: string;
     contact: string;
     main: string;
@@ -46,6 +47,7 @@ export function SiteHeader({ lang, labels, languages }: Props) {
   }, [open]);
   const NAV = [
     { href: "/portfolio", label: labels.portfolio },
+    { href: "/art", label: labels.art },
     { href: "/sobre", label: labels.about },
     { href: "/contato", label: labels.contact },
   ];

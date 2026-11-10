@@ -54,7 +54,9 @@ export default async function ProjectPage({ params }: Props) {
   const newer = index > 0 ? projects[index - 1] : null;
   const older = index < projects.length - 1 ? projects[index + 1] : null;
 
-  const video = parseVideo(project.videoUrl);
+  const videos = [project.videoUrl, ...project.videos]
+    .map((url) => parseVideo(url))
+    .filter((video) => video !== null);
   // Sem Capa no Notion, a primeira foto guardada no site vira a capa.
   const localCover: Media | null =
     !project.cover && project.photos[0] ? { kind: "image", src: project.photos[0].src } : null;
@@ -104,11 +106,11 @@ export default async function ProjectPage({ params }: Props) {
         </PixelLens>
       ) : null}
 
-      {video ? (
-        <div className={styles.cover}>
-          <VideoEmbed video={video} title={project.title} />
+      {videos.map((video, index) => (
+        <div key={index} className={styles.cover}>
+          <VideoEmbed video={video} title={videos.length > 1 ? `${project.title} (${index + 1})` : project.title} />
         </div>
-      ) : null}
+      ))}
 
       {blocks.length > 0 ? (
         <div className={styles.body}>

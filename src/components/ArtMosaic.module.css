@@ -1,0 +1,105 @@
+/* Mosaico: colunas fixas e linhas de altura fixa; cada bloco ocupa 1 ou 2
+   de cada. "dense" puxa os blocos pequenos para tapar os buracos. */
+.mosaic {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: clamp(150px, 16vw, 300px);
+  grid-auto-flow: dense;
+  gap: clamp(0.5rem, 1vw, 1rem);
+}
+
+.tile {
+  position: relative;
+  min-width: 0;
+  animation: focus 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i) * 0.08s);
+}
+
+.tile[data-size="wide"] {
+  grid-column: span 2;
+}
+
+.tile[data-size="tall"] {
+  grid-row: span 2;
+}
+
+.tile[data-size="large"] {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+@keyframes focus {
+  from {
+    opacity: 0;
+    filter: blur(12px);
+    transform: translateY(1.5rem);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+}
+
+.frame {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #0a0a0a;
+}
+
+.media {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Legenda por cima do canto de baixo, só no hover (ou no foco do teclado). */
+.caption {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.75rem;
+  padding: 2rem 0.85rem 0.7rem;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.75), transparent);
+  font-size: var(--step--1);
+  line-height: 1.3;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tile:hover .caption {
+  opacity: 1;
+}
+
+.category {
+  color: var(--ash);
+}
+
+/* Marca o fim do mosaico: quando chega perto da tela, entra o próximo lote. */
+.sentinel {
+  height: 1px;
+}
+
+@media (max-width: 1024px) {
+  .mosaic {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: clamp(140px, 24vw, 260px);
+  }
+}
+
+@media (max-width: 600px) {
+  .mosaic {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 42vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile {
+    animation: none;
+  }
+}

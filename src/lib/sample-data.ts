@@ -58,6 +58,7 @@ export const sampleProjects: Project[] = rows.map(([title, category, date, locat
   videoUrl: null,
   photos: local.photos,
   instagram: local.instagram,
+  videos: local.videos ?? [],
   };
 });
 

@@ -8,6 +8,8 @@ import styles from "./HeroWordmark.module.css";
  * A marca OLHO NEGRO ocupando a largura da tela, com o trabalho passando
  * por dentro das letras. Uma camada preta com as letras em branco fica por
  * cima do vídeo em modo "multiply": o branco deixa ver, o preto esconde.
+ * O palco inteiro entra em "screen" sobre a página, então o preto em volta
+ * das letras fica vazado e mostra o fundo de pontinhos.
  */
 export function HeroWordmark({ media, role }: { media: Media | null; role: string }) {
   const [top, bottom] = site.wordmark;

@@ -14,6 +14,12 @@
   background: #000;
   /* isola a mistura para que o "multiply" só enxergue a mídia */
   isolation: isolate;
+  /* Vazado: o palco já pronto (vídeo nas letras, preto em volta) entra em
+     "screen" sobre a página. No screen o preto some, então o fundo de
+     pontinhos (DotField) aparece em volta das letras. Nenhum ancestral pode
+     criar stacking context (transform, opacity, z-index...), senão o screen
+     deixa de enxergar o fundo e o preto volta. */
+  mix-blend-mode: screen;
   width: 100%;
   overflow: hidden;
   /* Texto decorativo: sem seleção e com a bolinha vermelha no lugar do cursor. */

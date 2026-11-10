@@ -56,7 +56,53 @@ export function PixelLens({ children, className, border = true, radius = 180, pi
       const [px, py] = style.objectPosition.split(" ").map((v) => parseFloat(v) / 100);
       const x = box.left - wrapBox.left + (box.width - drawW) * (Number.isNaN(px) ? 0.5 : px);
       const y = box.top - wrapBox.top + (box.height - drawH) * (Number.isNaN(py) ? 0.5 : py);
-      return { natW, natH, x, y, drawW, drawH };
+      return { x, y, drawW, drawH };
+    }
+
+    // Reduz a mídia em etapas de metade até o tamanho dos blocos: cada bloco
+    // vira a média real da área que cobre. Numa redução direta o navegador
+    // amostra poucos pixels e o resultado não lembra a imagem. Imagens
+    // paradas ficam em cache; vídeo é refeito a cada quadro.
+    const steps = [document.createElement("canvas"), document.createElement("canvas")];
+    let cached: { key: string; source: HTMLCanvasElement } | null = null;
+
+    function shrink(media: Media, drawW: number, drawH: number) {
+      const targetW = Math.max(1, Math.round(drawW / pixel));
+      const targetH = Math.max(1, Math.round(drawH / pixel));
+      const key = `${media instanceof HTMLImageElement ? media.currentSrc : ""}|${targetW}x${targetH}`;
+      if (media instanceof HTMLImageElement && cached?.key === key) return cached.source;
+
+      let w = Math.max(targetW, Math.round(drawW));
+      let h = Math.max(targetH, Math.round(drawH));
+      let source: CanvasImageSource = media;
+      let i = 0;
+      do {
+        const step = steps[i % 2];
+        step.width = w;
+        step.height = h;
+        const ctx = step.getContext("2d")!;
+        ctx.imageSmoothingQuality = "high";
+        ctx.clearRect(0, 0, w, h);
+        // Sem recorte de origem: o drawImage usa o bitmap inteiro, que no
+        // next/image pode ser maior que o naturalWidth informado.
+        ctx.drawImage(source, 0, 0, w, h);
+        source = step;
+        i += 1;
+        w = Math.max(targetW, Math.ceil(w / 2));
+        h = Math.max(targetH, Math.ceil(h / 2));
+      } while ((source as HTMLCanvasElement).width > targetW);
+
+      const result = source as HTMLCanvasElement;
+      if (media instanceof HTMLImageElement) {
+        // Copia para o cache não ser sobrescrito pelas próximas reduções.
+        const copy = document.createElement("canvas");
+        copy.width = result.width;
+        copy.height = result.height;
+        copy.getContext("2d")!.drawImage(result, 0, 0);
+        cached = { key, source: copy };
+        return copy;
+      }
+      return result;
     }
 
     function draw() {
@@ -68,26 +114,17 @@ export function PixelLens({ children, className, border = true, radius = 180, pi
       if (canvas!.width !== cols || canvas!.height !== rows) {
         canvas!.width = cols;
         canvas!.height = rows;
+        // Cada bloco com exatamente `pixel` px de tela, alinhado ao canto da caixa.
+        canvas!.style.width = `${cols * pixel}px`;
+        canvas!.style.height = `${rows * pixel}px`;
       }
       context!.clearRect(0, 0, cols, rows);
-      // Em fotos, cada bloco é a média da área. Em recortes (sem contorno), a
-      // média espalhava blocos cinzas no preto em volta do desenho; amostrar
-      // sem suavização mantém o bloco ou cheio ou vazio.
-      context!.imageSmoothingEnabled = border;
+      context!.imageSmoothingEnabled = false;
       const place = media ? layout(media) : null;
       if (media && place) {
+        const small = shrink(media, place.drawW, place.drawH);
         const drawMedia = () =>
-          context!.drawImage(
-            media,
-            0,
-            0,
-            place.natW,
-            place.natH,
-            place.x / pixel,
-            place.y / pixel,
-            place.drawW / pixel,
-            place.drawH / pixel,
-          );
+          context!.drawImage(small, place.x / pixel, place.y / pixel, place.drawW / pixel, place.drawH / pixel);
         drawMedia();
         // Se houver um shader por cima da imagem (GradientMask), a versão
         // pixelizada leva a mesma cor, recortada pelo desenho da imagem.
@@ -107,12 +144,12 @@ export function PixelLens({ children, className, border = true, radius = 180, pi
           drawMedia();
           context!.globalCompositeOperation = "source-over";
         }
-        // Recortes têm sombra semitransparente em volta; ela virava blocos
-        // escuros no preto. Cada bloco fica cheio ou vazio.
+        // Recortes: a borda do desenho vira blocos meio transparentes. Cada
+        // bloco fica cheio (se o desenho cobre a maior parte dele) ou vazio.
         if (!border) {
           try {
             const data = context!.getImageData(0, 0, cols, rows);
-            for (let i = 3; i < data.data.length; i += 4) data.data[i] = data.data[i] < 160 ? 0 : 255;
+            for (let i = 3; i < data.data.length; i += 4) data.data[i] = data.data[i] < 128 ? 0 : 255;
             context!.putImageData(data, 0, 0);
           } catch {
             // Imagem de outra origem: fica sem o corte.

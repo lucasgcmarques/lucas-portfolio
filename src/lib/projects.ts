@@ -53,6 +53,8 @@ export type Project = {
   photos: { src: string; alt: string }[];
   /** Links de posts/reels do Instagram escolhidos para o projeto. */
   instagram: string[];
+  /** Vídeos extras guardados em local-media, além do Vídeo do Notion. */
+  videos: string[];
 };
 
 /* ---------- URLs de mídia ---------- */
@@ -91,7 +93,7 @@ function getInstagramLinks(properties: NotionPage["properties"]): string[] {
 
 function pageToProject(
   page: NotionPage,
-): Omit<Project, "slug" | "thumbnail" | "photos"> & { slugOverride: string } {
+): Omit<Project, "slug" | "thumbnail" | "photos" | "videos"> & { slugOverride: string } {
   const p = page.properties;
   const date = getDate(p, PROPS.date);
   const coverFiles = getFiles(p, PROPS.cover);
@@ -224,6 +226,7 @@ export const getProjects = cache(async (): Promise<Project[]> => {
       ...notionProject,
       photos: local.photos,
       instagram: [...new Set([...notionProject.instagram, ...local.instagram])],
+      videos: local.videos ?? [],
     };
     const localCover: Media | null = local.photos[0] ? { kind: "image", src: local.photos[0].src } : null;
     let thumbnail = project.cover?.kind === "image" ? project.cover : localCover;

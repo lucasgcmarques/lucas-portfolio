@@ -41,10 +41,13 @@ export function parseVideo(raw: string | null | undefined): VideoSource | null {
       id = match ? match[2] : null;
     }
     if (!id || !/^[\w-]{6,}$/.test(id)) return null;
+    // Tempo inicial: ?t=62, ?t=62s, ?t=1m2s ou ?start=62.
+    const time = (url.searchParams.get("t") ?? url.searchParams.get("start") ?? "").match(/^(?:(\d+)m)?(\d+)s?$/);
+    const start = time ? Number(time[1] ?? 0) * 60 + Number(time[2]) : 0;
     return {
       provider: "youtube",
       id,
-      embedUrl: `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1`,
+      embedUrl: `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1${start ? `&start=${start}` : ""}`,
       thumbnail: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
     };
   }

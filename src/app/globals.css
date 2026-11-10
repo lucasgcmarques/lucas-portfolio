@@ -54,7 +54,9 @@ body {
   /* Martian Mono um pouco condensada: lê melhor em blocos de texto. */
   font-stretch: 87.5%;
   min-height: 100vh;
-  background: var(--black);
+  /* Transparente: o preto vem do html, e assim o fundo de pontinhos
+     (DotField, z-index -1) aparece atrás de todo o conteúdo. */
+  background: transparent;
   color: var(--bone);
   font-family: var(--font-text);
   font-size: var(--step-0);
