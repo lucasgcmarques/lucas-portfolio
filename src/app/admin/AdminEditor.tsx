@@ -360,6 +360,15 @@ function ProjectsEditor({ projects, onChange }: { projects: ProjectEntry[]; onCh
 
 /* ---------- Art ---------- */
 
+/** Espalha as categorias ao longo do mosaico, mantendo a ordem dentro de cada uma. */
+function interleave(works: ArtEntry[]): ArtEntry[] {
+  const groups = new Map<string, ArtEntry[]>();
+  for (const work of works) groups.set(work.category, [...(groups.get(work.category) ?? []), work]);
+  const position = new Map<string, number>();
+  for (const group of groups.values()) group.forEach((work, i) => position.set(work.id, (i + 0.5) / group.length));
+  return [...works].sort((a, b) => position.get(a.id)! - position.get(b.id)!);
+}
+
 function ArtEditor({ works, onChange }: { works: ArtEntry[]; onChange: (w: ArtEntry[]) => void }) {
   const [busy, setBusy] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -402,18 +411,23 @@ function ArtEditor({ works, onChange }: { works: ArtEntry[]; onChange: (w: ArtEn
           Art · {works.length} trabalhos
           {works.some((w) => w.hidden) ? ` (${works.filter((w) => w.hidden).length} ocultos)` : ""}
         </h2>
-        <label className={styles.primary}>
-          {busy ?? "+ Enviar imagens e vídeos"}
-          <input
-            ref={inputRef}
-            type="file"
-            accept="image/*,video/*"
-            multiple
-            hidden
-            disabled={Boolean(busy)}
-            onChange={(e) => addFiles(e.target.files)}
-          />
-        </label>
+        <span className={styles.inline}>
+          <button type="button" className={styles.ghost} onClick={() => onChange(interleave(works))}>
+            Intercalar categorias
+          </button>
+          <label className={styles.primary}>
+            {busy ?? "+ Enviar imagens e vídeos"}
+            <input
+              ref={inputRef}
+              type="file"
+              accept="image/*,video/*"
+              multiple
+              hidden
+              disabled={Boolean(busy)}
+              onChange={(e) => addFiles(e.target.files)}
+            />
+          </label>
+        </span>
       </div>
       <p className={styles.muted}>A ordem aqui é a ordem do mosaico. Use as setas para mudar.</p>
       <ul role="list" className={styles.cards}>
