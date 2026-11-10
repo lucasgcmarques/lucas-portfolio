@@ -9,6 +9,7 @@ import { VideoEmbed } from "@/components/notion/VideoEmbed";
 import { formatDateRange } from "@/lib/format";
 import { getDictionary, hasLocale, href, locales } from "@/lib/i18n";
 import { parseVideo } from "@/lib/media";
+import { paragraphs } from "@/lib/content-types";
 import { getBlocks, getProjectBySlug, getProjects, type Media } from "@/lib/projects";
 import styles from "./project.module.css";
 
@@ -49,7 +50,13 @@ export default async function ProjectPage({ params }: Props) {
   const project = await getProjectBySlug(slug);
   if (!project) notFound();
 
-  const [blocks, projects] = await Promise.all([getBlocks(project.id), getProjects()]);
+  // Projetos do CMS trazem o próprio texto; os outros, os blocos do Notion.
+  const fromCms = project.body !== undefined;
+  const [blocks, projects] = await Promise.all([
+    fromCms ? Promise.resolve([]) : getBlocks(project.id),
+    getProjects(),
+  ]);
+  const bodyParagraphs = paragraphs(project.body ?? "");
   const index = projects.findIndex((p) => p.id === project.id);
   const newer = index > 0 ? projects[index - 1] : null;
   const older = index < projects.length - 1 ? projects[index + 1] : null;
@@ -111,6 +118,14 @@ export default async function ProjectPage({ params }: Props) {
           <VideoEmbed video={video} title={videos.length > 1 ? `${project.title} (${index + 1})` : project.title} />
         </div>
       ))}
+
+      {bodyParagraphs.length > 0 ? (
+        <div className={`${styles.body} ${styles.text}`}>
+          {bodyParagraphs.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+        </div>
+      ) : null}
 
       {blocks.length > 0 ? (
         <div className={styles.body}>

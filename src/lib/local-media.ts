@@ -22,6 +22,14 @@ function photos(slug: string, alts: string[]) {
   }));
 }
 
+// Fotos vindas do álbum do iCloud (public/projetos/<slug>/album-NN.jpg).
+function album(slug: string, alts: string[]) {
+  return alts.map((alt, index) => ({
+    src: `/projetos/${slug}/album-${String(index + 1).padStart(2, "0")}.jpg`,
+    alt,
+  }));
+}
+
 const coachella: LocalMedia = {
   photos: photos("visuais-luisa-sonza-coachella", [
     "Luísa Sonza com dançarinos e bandeira do Brasil no palco do Coachella 2026",
@@ -38,14 +46,24 @@ export const localMedia: Record<string, LocalMedia> = {
       "Pista do Emopalooza com luz verde e cenografia de Halloween",
       "Cenografia de Halloween ao lado do palco",
       "Arte de divulgação do Emopalooza de Halloween",
-    ]),
+    ]).concat(
+      album("emopalooza-de-halloween", [
+        "Cenografia do Emopalooza com o letreiro EMO e os visuais nas telas laterais",
+      ]),
+    ),
     instagram: [],
   },
   "festival-halloweeknd": {
     photos: photos("festival-halloweeknd", [
       "Palco do Festival Halloweeknd com fogos e visuais no telão",
       "Line-up do Festival Halloweeknd",
-    ]),
+    ]).concat(
+      album("festival-halloweeknd", [
+        "Palco do Halloweeknd com o logo do festival no telão e luzes vermelhas e azuis",
+        "Telão do Halloweeknd com a arte do festival sobre fundo vermelho e verde",
+        "Visual verde e roxo no telão do Halloweeknd durante o show",
+      ]),
+    ),
     instagram: [],
   },
   "1-festival-fyah-cultura-black": {
@@ -79,7 +97,15 @@ export const localMedia: Record<string, LocalMedia> = {
       "Violinista no palco do Tropical Jazz",
       "Show do Tropical Jazz em preto e branco",
       "Arte de divulgação do Tropical Jazz",
-    ]),
+    ]).concat(
+      album("tropical-jazz", [
+        "Público dançando sob a tenda do Tropical Jazz com luzes coloridas",
+        "Feixes de luz amarela sobre o público do Tropical Jazz",
+        "Show à noite no palco do Tropical Jazz, visto do meio do público",
+        "Palco do Tropical Jazz de dia com a arte tropical no telão de LED",
+        "Telão de LED do Tropical Jazz com a arte do festival antes do show",
+      ]),
+    ),
     instagram: ["https://www.instagram.com/p/C0l-fZTsfvA/"],
   },
   budx: {
@@ -103,7 +129,12 @@ export const localMedia: Record<string, LocalMedia> = {
   "festival-do-clube-de-criacao-2026-show-da-jenni-mosello": {
     photos: photos("festival-do-clube-de-criacao-2026-show-da-jenni-mosello", [
       "Lettering da Jenni Mosello usado nos visuais do show",
-    ]),
+    ]).concat(
+      album("festival-do-clube-de-criacao-2026-show-da-jenni-mosello", [
+        "Lucas na lateral do palco do Festival do Clube de Criação, ao lado do telão de LED",
+        "Notebook e controlador usados para mixar os visuais do show da Jenni Mosello",
+      ]),
+    ),
     instagram: [],
   },
   "visuais-luisa-sonza-coachella": coachella,

@@ -1,4 +1,6 @@
 import { cache } from "react";
+import { getContent } from "./content-store";
+import { isVideoUrl, type ProjectEntry } from "./content-types";
 import { getLocalMedia } from "./local-media";
 import { isVideoFileName, parseVideo, vimeoThumbnail } from "./media";
 import { mapWithConcurrency, notionConfigured, notionRequest } from "./notion/client";
@@ -55,6 +57,8 @@ export type Project = {
   instagram: string[];
   /** Vídeos extras guardados em local-media, além do Vídeo do Notion. */
   videos: string[];
+  /** Texto da página vindo do CMS (parágrafos separados por linha em branco). */
+  body?: string;
 };
 
 /* ---------- URLs de mídia ---------- */
@@ -206,7 +210,51 @@ async function fetchBlockTree(blockId: string, depth = 0): Promise<NotionBlock[]
 
 /* ---------- API usada pelas páginas ---------- */
 
+/** Projetos publicados: do CMS (/admin) quando já houver conteúdo salvo lá. */
 export const getProjects = cache(async (): Promise<Project[]> => {
+  const content = await getContent();
+  if (content) return projectsFromContent(content.projects);
+  return getSourceProjects();
+});
+
+function projectsFromContent(entries: ProjectEntry[]): Project[] {
+  const visible = entries.filter((entry) => entry.published && entry.title.trim());
+  const slugs = uniqueSlugs(visible.map((e) => ({ id: e.id, title: e.title, override: e.slug || undefined })));
+  return visible
+    .map((entry): Project => {
+      const cover: Media | null = entry.cover
+        ? { kind: isVideoUrl(entry.cover) ? "video" : "image", src: entry.cover }
+        : null;
+      const firstPhoto: Media | null = entry.photos[0] ? { kind: "image", src: entry.photos[0].src } : null;
+      const firstVideo = parseVideo(entry.videos[0]);
+      const videoThumb: Media | null =
+        firstVideo && "thumbnail" in firstVideo ? { kind: "image", src: firstVideo.thumbnail } : null;
+      return {
+        id: entry.id,
+        slug: slugs.get(entry.id) as string,
+        title: entry.title,
+        description: entry.description,
+        category: entry.category || null,
+        tags: entry.tags,
+        date: entry.date || null,
+        endDate: entry.endDate || null,
+        year: entry.date ? Number(entry.date.slice(0, 4)) : null,
+        location: entry.location || null,
+        featured: entry.featured,
+        cover,
+        thumbnail: (cover?.kind === "image" ? cover : null) ?? firstPhoto ?? videoThumb ?? cover,
+        videoUrl: null,
+        photos: entry.photos,
+        instagram: entry.instagram,
+        videos: entry.videos,
+        body: entry.body,
+      };
+    })
+    .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
+}
+
+/** Projetos da fonte antiga (Notion ou dados de exemplo + local-media). */
+export const getSourceProjects = cache(async (): Promise<Project[]> => {
   if (!notionConfigured()) return sampleProjects;
 
   const pages = await queryAllPages();
@@ -258,7 +306,8 @@ export function pickFeatured(projects: Project[], count: number = site.featuredC
 }
 
 /** Vídeo ou imagem que aparece por dentro das letras na Home. */
-export function pickHeroMedia(projects: Project[]): Media | null {
+export function pickHeroMedia(projects: Project[], fromCms?: string): Media | null {
+  if (fromCms) return { kind: isVideoUrl(fromCms) ? "video" : "image", src: fromCms };
   const fromEnv = process.env.HERO_VIDEO_URL;
   if (fromEnv) return { kind: "video", src: fromEnv };
   const ordered = [...projects.filter((p) => p.featured), ...projects];

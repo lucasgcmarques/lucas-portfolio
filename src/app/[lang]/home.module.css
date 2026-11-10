@@ -1,6 +1,6 @@
 .intro {
   display: grid;
-  grid-template-columns: minmax(0, 4fr) minmax(0, 6fr) minmax(0, 2fr);
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--space-m) clamp(1rem, 3vw, 3rem);
   align-items: start;
   padding-top: var(--space-m);
@@ -24,59 +24,6 @@
   font-size: var(--step-0);
   color: var(--ash);
   margin-top: 0.25rem;
-}
-
-/* O que eu faço, direto, em lista; abaixo, a frase curta.
-   Tudo surge item a item, saindo de um desfoque. */
-.statement {
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
-}
-
-.disciplines {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem 0;
-  font-size: var(--step--1);
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-}
-
-/* A barra vai depois de cada item: quando a lista quebra, a linha nova
-   começa limpa, sem barra na frente. */
-.disciplines li:not(:last-child)::after {
-  content: "/";
-  margin-inline: 0.55em;
-  color: var(--red);
-}
-
-/* Frase bem pequena e discreta, quase uma legenda. */
-.tagline {
-  font-size: 0.72rem;
-  line-height: 1.4;
-  letter-spacing: 0.04em;
-  color: var(--ash);
-}
-
-.word {
-  display: inline-block;
-  white-space: pre;
-  animation: focus 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: calc(0.5s + var(--i) * 0.14s);
-}
-
-@keyframes focus {
-  from {
-    opacity: 0;
-    filter: blur(10px);
-    transform: translateY(0.15em);
-  }
-  to {
-    opacity: 1;
-    filter: blur(0);
-    transform: none;
-  }
 }
 
 .actions {
@@ -209,9 +156,6 @@
     padding-top: 1rem;
   }
 
-  .disciplines {
-    font-size: var(--step--1);
-  }
 
 
 

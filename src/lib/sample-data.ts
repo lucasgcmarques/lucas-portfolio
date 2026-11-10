@@ -39,12 +39,14 @@ const rows: Row[] = [
 const FEATURED = new Set([1, 10, 4, 8, 12]);
 
 export const sampleProjects: Project[] = rows.map(([title, category, date, location, description], index) => {
+  // O endereço continua o do título original; o nome mostrado ganha
+  // "Conteúdo" na frente nos projetos de produção de conteúdo.
   const slug = slugify(title);
   const local = getLocalMedia(slug);
   return {
   id: `sample-${index}`,
   slug,
-  title,
+  title: category === "Produção de Conteúdo" ? `Conteúdo ${title}` : title,
   description,
   category,
   tags: [],

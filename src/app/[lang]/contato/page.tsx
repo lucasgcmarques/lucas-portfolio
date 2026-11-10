@@ -5,7 +5,7 @@ import { Decor } from "@/components/Decor";
 import { GradientMask } from "@/components/GradientMask";
 import { PixelLens } from "@/components/PixelLens";
 import { getDictionary, hasLocale } from "@/lib/i18n";
-import { site } from "@/lib/site";
+import { getContact } from "@/lib/site-content";
 import styles from "./contact.module.css";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/contato">): Promise<Metadata> {
@@ -19,10 +19,11 @@ export default async function ContactPage({ params }: PageProps<"/[lang]/contato
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const t = getDictionary(lang).contact;
+  const contact = await getContact();
   const channels = [
-    { label: "Instagram", value: site.contact.instagram.handle, url: site.contact.instagram.url },
-    { label: "WhatsApp", value: site.contact.phoneDisplay, url: site.contact.whatsapp },
-    ...site.contact.others.map((channel) => ({ label: channel.label, value: channel.url.replace(/^https?:\/\/(www\.)?/, ""), url: channel.url })),
+    { label: "Instagram", value: contact.instagramHandle, url: contact.instagramUrl },
+    { label: "WhatsApp", value: contact.phoneDisplay, url: contact.whatsapp },
+    ...contact.others.map((channel) => ({ label: channel.label, value: channel.url.replace(/^https?:\/\/(www\.)?/, ""), url: channel.url })),
   ];
 
   return (
@@ -34,11 +35,11 @@ export default async function ContactPage({ params }: PageProps<"/[lang]/contato
         <p id="email-label" className={styles.hint}>
           {t.hint}
         </p>
-        <a className={styles.email} href={`mailto:${site.contact.email}`}>
-          {site.contact.email}
+        <a className={styles.email} href={`mailto:${contact.email}`}>
+          {contact.email}
         </a>
         <div className={styles.copy}>
-          <CopyEmail email={site.contact.email} labels={{ copy: t.copy, copied: t.copied }} />
+          <CopyEmail email={contact.email} labels={{ copy: t.copy, copied: t.copied }} />
         </div>
       </section>
 

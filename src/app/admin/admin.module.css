@@ -1,0 +1,389 @@
+/* CMS: interface simples, nas cores do site, sem as fontes de display. */
+
+.shell {
+  min-height: 100vh;
+  font-size: 0.9rem;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-stretch: 100%;
+}
+
+.shell input,
+.shell textarea,
+.shell select,
+.center input {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #0d0d0d;
+  color: var(--bone);
+  font: inherit;
+}
+
+.shell textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.shell input:focus,
+.shell textarea:focus,
+.shell select:focus {
+  outline: none;
+  border-color: var(--ash);
+}
+
+/* Barra de cima: marca, abas e ações. */
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  padding: 0.75rem clamp(1rem, 3vw, 2rem);
+  background: rgb(0 0 0 / 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  font-weight: 600;
+  color: var(--red);
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.tab {
+  padding: 0.4rem 0.8rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.tab[aria-pressed="true"] {
+  background: var(--bone);
+  color: var(--black);
+}
+
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.primary,
+.ghost,
+.danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.primary {
+  border: 1px solid var(--red);
+  background: var(--red);
+  color: var(--bone);
+}
+
+.ghost {
+  border: 1px solid var(--line);
+  background: transparent;
+}
+
+.danger {
+  border: 1px solid transparent;
+  background: transparent;
+  color: #e0767b;
+}
+
+.ghost:hover {
+  border-color: var(--ash);
+}
+
+.danger:hover {
+  border-color: #e0767b;
+}
+
+.primary:disabled,
+.ghost[aria-busy="true"] {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.banner {
+  margin: 1rem clamp(1rem, 3vw, 2rem) 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ash);
+}
+
+.main {
+  padding: 1.5rem clamp(1rem, 3vw, 2rem) 4rem;
+}
+
+/* Portfólio: lista à esquerda, formulário à direita. */
+.split {
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+
+.sidebar {
+  position: sticky;
+  top: 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: calc(100vh - 6rem);
+}
+
+.search {
+  flex: none;
+}
+
+.list {
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.listItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.listItem[aria-current="true"] {
+  background: #1a1a1a;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  max-width: 820px;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field > span:first-child,
+.fieldset legend {
+  color: var(--ash);
+  font-size: 0.8rem;
+}
+
+.fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.inline {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.inline input {
+  flex: 1 1 180px;
+  width: auto;
+}
+
+.checks {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.checks label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+.checks input {
+  width: auto;
+}
+
+.muted {
+  color: var(--ash);
+}
+
+.error {
+  color: #e0767b;
+}
+
+/* Mídia: prévia + link + botão de envio. */
+.media {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.mediaControls {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.preview {
+  flex: none;
+  width: 160px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #111;
+  border: 1px solid var(--line);
+}
+
+.photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 0.75rem;
+}
+
+.photo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.photo .preview {
+  width: 100%;
+}
+
+/* Art: cartões com prévia e campos. */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.cardItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.cardItem .preview {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+}
+
+.cardFields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+/* Login. */
+.center {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 1rem;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-stretch: 100%;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: min(100%, 360px);
+  padding: 1.75rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.cardTitle {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--red);
+}
+
+@media (max-width: 800px) {
+  .split {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    max-height: none;
+  }
+
+  .list {
+    max-height: 40vh;
+  }
+
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+
+  .media {
+    flex-direction: column;
+  }
+
+  .preview {
+    width: 100%;
+  }
+
+  .topActions {
+    margin-left: 0;
+  }
+}

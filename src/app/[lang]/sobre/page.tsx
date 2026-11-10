@@ -9,6 +9,7 @@ import { getDictionary, hasLocale, href } from "@/lib/i18n";
 import { notionConfigured } from "@/lib/notion/client";
 import { getBlocks, getProjects, type Project } from "@/lib/projects";
 import { site } from "@/lib/site";
+import { getAbout } from "@/lib/site-content";
 import styles from "./about.module.css";
 
 export const revalidate = 600;
@@ -34,8 +35,9 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/sobre">) 
   if (!hasLocale(lang)) notFound();
   const t = getDictionary(lang).about;
   const aboutPageId = process.env.NOTION_ABOUT_PAGE_ID;
-  const [projects, aboutBlocks] = await Promise.all([
+  const [projects, about, aboutBlocks] = await Promise.all([
     getProjects(),
+    getAbout(lang),
     lang === "pt" && aboutPageId && notionConfigured() ? getBlocks(aboutPageId) : Promise.resolve([]),
   ]);
   const timeline = groupByYear(projects);
@@ -50,7 +52,7 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/sobre">) 
             {aboutBlocks.length > 0 ? (
               <NotionBlocks blocks={aboutBlocks} />
             ) : (
-              t.bio.map((paragraph) => <p key={paragraph}>{paragraph}</p>)
+              about.bio.map((paragraph) => <p key={paragraph}>{paragraph}</p>)
             )}
           </section>
           <Decor shape={2} className={styles.bioDecor} />
@@ -58,14 +60,19 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/sobre">) 
 
         <figure className={styles.art}>
           <PixelLens border={false} radius={240} pixel={14}>
-            <Image
-              src="/images/organismo.png"
-              alt={t.artAlt}
-              width={2070}
-              height={2400}
-              sizes="(max-width: 900px) 100vw, 55vw"
-              priority
-            />
+            {about.art === "/images/organismo.png" ? (
+              <Image
+                src={about.art}
+                alt={about.artAlt}
+                width={2070}
+                height={2400}
+                sizes="(max-width: 900px) 100vw, 55vw"
+                priority
+              />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element -- arte enviada pelo CMS, de tamanho desconhecido
+              <img src={about.art} alt={about.artAlt} fetchPriority="high" />
+            )}
           </PixelLens>
         </figure>
       </div>

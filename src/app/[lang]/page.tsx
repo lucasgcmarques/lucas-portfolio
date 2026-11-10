@@ -6,6 +6,7 @@ import { ProjectCard } from "@/components/ProjectCard";
 import { getDictionary, hasLocale, href } from "@/lib/i18n";
 import { getProjects, pickFeatured, pickHeroMedia } from "@/lib/projects";
 import { site } from "@/lib/site";
+import { getAbout, getHeroVideo } from "@/lib/site-content";
 import styles from "./home.module.css";
 
 export const revalidate = 600;
@@ -15,42 +16,21 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
   if (!hasLocale(lang)) notFound();
   const t = getDictionary(lang);
 
-  const projects = await getProjects();
+  const [projects, about, heroVideo] = await Promise.all([getProjects(), getAbout(lang), getHeroVideo()]);
   const featured = pickFeatured(projects);
   const [lead, ...rest] = featured;
 
   return (
     <>
       <div className={`container ${styles.first}`}>
-        <HeroWordmark media={pickHeroMedia(projects)} role={t.role} />
+        <HeroWordmark media={pickHeroMedia(projects, heroVideo)} role={t.role} />
 
         <div className={styles.intro}>
           <p className={styles.who}>
             {site.person}
             <span className={styles.role}>{t.city}</span>
           </p>
-          <div className={styles.statement}>
-            <ul role="list" className={styles.disciplines}>
-              {t.disciplines.map((item, i) => (
-                <li key={item} className={styles.word} style={{ "--i": i } as React.CSSProperties}>
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <p className={styles.tagline}>
-              {t.tagline.split(" ").map((word, i) => (
-                <span
-                  key={i}
-                  className={styles.word}
-                  style={{ "--i": t.disciplines.length + i } as React.CSSProperties}
-                >
-                  {word}{" "}
-                </span>
-              ))}
-            </p>
-          </div>
           <p className={styles.actions}>
-            <Link href={href(lang, "/portfolio")}>{t.home.seePortfolio}</Link>
             <Link href={href(lang, "/contato")} className={styles.talk}>
               {t.home.talk}
             </Link>
@@ -82,7 +62,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         <h2 id="creditos" className="section-title">
           {t.home.credits}
         </h2>
-        <p className={styles.creditList}>{site.credits.join(", ")}.</p>
+        <p className={styles.creditList}>{about.credits.join(", ")}.</p>
       </section>
     </>
   );

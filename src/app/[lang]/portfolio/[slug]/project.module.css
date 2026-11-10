@@ -69,6 +69,15 @@
   padding-top: var(--space-m);
 }
 
+/* Texto do CMS: parágrafos simples, na largura de leitura. */
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  max-width: var(--measure);
+  line-height: 1.6;
+}
+
 .pager {
   display: grid;
   grid-template-columns: 1fr 1fr;

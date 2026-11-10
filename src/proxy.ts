@@ -22,7 +22,7 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Fora: arquivos internos, API e qualquer arquivo com extensão (ícones,
+  // Fora: arquivos internos, API, o CMS (/admin) e qualquer arquivo com extensão (ícones,
   // vídeos, imagens, robots.txt, sitemap.xml).
-  matcher: ["/((?!_next|api|.*\\..*).*)"],
+  matcher: ["/((?!_next|api|admin|.*\\..*).*)"],
 };
