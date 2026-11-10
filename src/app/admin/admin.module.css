@@ -357,6 +357,15 @@
   gap: 0.7rem;
 }
 
+/* Dentro do cartão estreito, o campo de mídia empilha: prévia em cima. */
+.cardFields .media {
+  flex-direction: column;
+}
+
+.cardFields .media .preview {
+  width: 100%;
+}
+
 /* Login. */
 .center {
   display: grid;
