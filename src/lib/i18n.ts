@@ -66,6 +66,10 @@ const pt = {
     filterLabel: "Filtrar por categoria",
     countWord: "trabalhos",
     empty: "Em breve.",
+    expand: "Ampliar",
+    close: "Fechar",
+    previous: "Anterior",
+    next: "Próximo",
   },
 
   project: {
@@ -163,6 +167,10 @@ const en: Dictionary = {
     filterLabel: "Filter by category",
     countWord: "works",
     empty: "Coming soon.",
+    expand: "Enlarge",
+    close: "Close",
+    previous: "Previous",
+    next: "Next",
   },
 
   project: {
@@ -258,6 +266,10 @@ const fr: Dictionary = {
     filterLabel: "Filtrer par catégorie",
     countWord: "œuvres",
     empty: "Bientôt.",
+    expand: "Agrandir",
+    close: "Fermer",
+    previous: "Précédent",
+    next: "Suivant",
   },
 
   project: {

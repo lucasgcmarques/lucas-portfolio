@@ -22,7 +22,16 @@ export default async function ArtPage({ params }: PageProps<"/[lang]/art">) {
       <h1 className="page-title">{t.title}</h1>
       <ArtMosaic
         works={works}
-        labels={{ all: t.all, filterLabel: t.filterLabel, countWord: t.countWord, empty: t.empty }}
+        labels={{
+          all: t.all,
+          filterLabel: t.filterLabel,
+          countWord: t.countWord,
+          empty: t.empty,
+          expand: t.expand,
+          close: t.close,
+          previous: t.previous,
+          next: t.next,
+        }}
       />
     </div>
   );
