@@ -11,7 +11,9 @@ import {
   type ProjectEntry,
   type SiteContent,
 } from "@/lib/content-types";
+import { Lightbox, type LightboxItem } from "@/components/Lightbox";
 import { logout, saveContent } from "./actions";
+import { BankButton, MediaBankProvider } from "./MediaBank";
 import { uploadMedia } from "./upload";
 import styles from "./admin.module.css";
 
@@ -122,6 +124,7 @@ export function AdminEditor({
         </p>
       ) : null}
 
+      <MediaBankProvider content={content}>
       <main className={styles.main}>
         {tab === "portfolio" ? (
           <ProjectsEditor
@@ -195,8 +198,27 @@ export function AdminEditor({
           </section>
         ) : null}
       </main>
+      </MediaBankProvider>
     </div>
   );
+}
+
+const LIGHTBOX_LABELS = { close: "Fechar", previous: "Anterior", next: "Próxima" };
+
+/** Lightbox do CMS: abre a lista na posição clicada e passa com as setas. */
+function useAdminLightbox(items: LightboxItem[]) {
+  const [open, setOpen] = useState<number | null>(null);
+  const node =
+    open !== null && items[open] ? (
+      <Lightbox
+        items={items}
+        index={open}
+        labels={LIGHTBOX_LABELS}
+        onMove={(delta) => setOpen((i) => (i === null ? i : (i + delta + items.length) % items.length))}
+        onClose={() => setOpen(null)}
+      />
+    ) : null;
+  return [setOpen, node] as const;
 }
 
 /* ---------- Portfólio ---------- */
@@ -375,6 +397,15 @@ function ArtEditor({ works, onChange }: { works: ArtEntry[]; onChange: (w: ArtEn
   // Arrastar e soltar: qual cartão está sendo arrastado e sobre qual ele está.
   const [dragId, setDragId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
+  const [openAt, lightbox] = useAdminLightbox(
+    works.map((work, i) => ({
+      src: work.src,
+      kind: work.kind,
+      poster: work.poster,
+      alt: work.alt,
+      caption: [`${String(i + 1).padStart(2, "0")} · ${work.title || "Sem título"}`, work.category, work.hidden ? "oculto" : ""],
+    })),
+  );
 
   /** Tira o cartão arrastado do lugar e o põe na posição do cartão alvo. */
   function drop(targetId: string) {
@@ -431,6 +462,26 @@ function ArtEditor({ works, onChange }: { works: ArtEntry[]; onChange: (w: ArtEn
           <button type="button" className={styles.ghost} onClick={() => onChange(interleave(works))}>
             Intercalar categorias
           </button>
+          <BankButton
+            accept="image/*,video/*"
+            multiple
+            label="+ Escolher do banco"
+            exclude={works.map((w) => w.src)}
+            onPick={(items) =>
+              onChange([
+                ...items.map((item) => ({
+                  id: newId(),
+                  src: item.src,
+                  kind: item.kind,
+                  category: (item.kind === "video" ? "Video Art" : "Digital Art") as ArtEntry["category"],
+                  alt: item.alt,
+                  title: "",
+                  size: "small" as const,
+                })),
+                ...works,
+              ])
+            }
+          />
           <label className={styles.primary}>
             {busy ?? "+ Enviar imagens e vídeos"}
             <input
@@ -501,7 +552,13 @@ function ArtEditor({ works, onChange }: { works: ArtEntry[]; onChange: (w: ArtEn
                   setOverId(null);
                 }}
               >
-                {work.kind === "video" ? <VideoThumb src={work.src} poster={work.poster} /> : <Preview src={work.src} />}
+                {work.kind === "video" ? (
+                  <VideoThumb src={work.src} poster={work.poster} />
+                ) : (
+                  <button type="button" className={styles.zoom} onClick={() => openAt(index)} aria-label="Ampliar">
+                    <Preview src={work.src} />
+                  </button>
+                )}
                 <span className={styles.badgeNum}>{String(index + 1).padStart(2, "0")}</span>
                 <span className={styles.badges}>
                   {work.kind === "video" ? <span className={styles.badge}>Vídeo</span> : null}
@@ -618,6 +675,7 @@ function ArtEditor({ works, onChange }: { works: ArtEntry[]; onChange: (w: ArtEn
           ),
         )}
       </ul>
+      {lightbox}
     </section>
   );
 }
@@ -818,6 +876,7 @@ function MediaField({
           <input value={value} placeholder="Link do arquivo" onChange={(e) => onChange(e.target.value)} />
           <span className={styles.inline}>
             <UploadButton accept={accept} label="Enviar do computador" onUploaded={([file]) => onChange(file.url)} />
+            <BankButton accept={accept} exclude={value ? [value] : []} onPick={([item]) => onChange(item.src)} />
             {value ? (
               <button type="button" className={styles.ghost} onClick={() => onChange("")}>
                 Limpar
@@ -831,13 +890,23 @@ function MediaField({
 }
 
 function PhotosField({ photos, onChange }: { photos: Photo[]; onChange: (photos: Photo[]) => void }) {
+  const [openAt, lightbox] = useAdminLightbox(
+    photos.map((photo, i) => ({
+      src: photo.src,
+      kind: isVideoUrl(photo.src) ? "video" : "image",
+      alt: photo.alt,
+      caption: [photo.alt || `Foto ${i + 1}`, photo.hidden ? "oculta no site" : ""],
+    })),
+  );
   return (
     <fieldset className={styles.fieldset}>
       <legend>Fotos ({photos.length})</legend>
       <ul role="list" className={styles.photos}>
         {photos.map((photo, index) => (
           <li key={`${photo.src}-${index}`} className={styles.photo} data-hidden={photo.hidden || undefined}>
-            <Preview src={photo.src} />
+            <button type="button" className={styles.zoom} onClick={() => openAt(index)} aria-label={`Ampliar foto ${index + 1}`}>
+              <Preview src={photo.src} />
+            </button>
             <input
               placeholder="Descrição da foto"
               value={photo.alt}
@@ -865,12 +934,22 @@ function PhotosField({ photos, onChange }: { photos: Photo[]; onChange: (photos:
           </li>
         ))}
       </ul>
-      <UploadButton
-        accept="image/*"
-        multiple
-        label="+ Enviar fotos"
-        onUploaded={(files) => onChange([...photos, ...files.map((f) => ({ src: f.url, alt: "" }))])}
-      />
+      <span className={styles.inline}>
+        <UploadButton
+          accept="image/*"
+          multiple
+          label="+ Enviar do computador"
+          onUploaded={(files) => onChange([...photos, ...files.map((f) => ({ src: f.url, alt: "" }))])}
+        />
+        <BankButton
+          accept="image/*"
+          multiple
+          label="+ Escolher do banco"
+          exclude={photos.map((p) => p.src)}
+          onPick={(items) => onChange([...photos, ...items.map((item) => ({ src: item.src, alt: item.alt }))])}
+        />
+      </span>
+      {lightbox}
     </fieldset>
   );
 }
