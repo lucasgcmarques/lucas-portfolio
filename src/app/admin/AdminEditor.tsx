@@ -26,10 +26,10 @@ const TABS: { id: Tab; label: string }[] = [
 ];
 
 const SIZES: { value: ArtEntry["size"]; label: string }[] = [
-  { value: "small", label: "Pequeno (1×1)" },
-  { value: "wide", label: "Largo (2×1)" },
-  { value: "tall", label: "Alto (1×2)" },
-  { value: "large", label: "Grande (2×2)" },
+  { value: "small", label: "Pequeno" },
+  { value: "wide", label: "Largo" },
+  { value: "tall", label: "Alto" },
+  { value: "large", label: "Grande" },
 ];
 
 function move<T>(list: T[], index: number, delta: number): T[] {
@@ -371,6 +371,7 @@ function interleave(works: ArtEntry[]): ArtEntry[] {
 
 function ArtEditor({ works, onChange }: { works: ArtEntry[]; onChange: (w: ArtEntry[]) => void }) {
   const [busy, setBusy] = useState<string | null>(null);
+  const [filter, setFilter] = useState<ArtEntry["category"] | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   function update(id: string, patch: Partial<ArtEntry>) {
@@ -429,18 +430,46 @@ function ArtEditor({ works, onChange }: { works: ArtEntry[]; onChange: (w: ArtEn
           </label>
         </span>
       </div>
-      <p className={styles.muted}>A ordem aqui é a ordem do mosaico. Use as setas para mudar.</p>
+      <div className={styles.artToolbar}>
+        <div className={styles.tabs} role="group" aria-label="Filtrar por categoria">
+          {[null, ...artCategories].map((c) => (
+            <button
+              key={c ?? "all"}
+              type="button"
+              className={styles.chip}
+              aria-pressed={filter === c}
+              onClick={() => setFilter(c)}
+            >
+              {c ?? "Todas"} <span className={styles.muted}>{c ? works.filter((w) => w.category === c).length : works.length}</span>
+            </button>
+          ))}
+        </div>
+        <p className={styles.muted}>O número de cada cartão é a posição no mosaico. Use ← → para mudar.</p>
+      </div>
       <ul role="list" className={styles.cards}>
-        {works.map((work, index) => (
-          <li key={work.id} className={styles.cardItem} data-hidden={work.hidden || undefined}>
-            <Preview src={work.src} poster={work.poster} />
-            <div className={styles.cardFields}>
-              <TextField label="Título (opcional)" value={work.title} onChange={(title) => update(work.id, { title })} />
-              <TextField label="Descrição (acessibilidade)" value={work.alt} onChange={(alt) => update(work.id, { alt })} />
-              <div className={styles.grid2}>
-                <label className={styles.field}>
-                  <span>Categoria</span>
+        {works.map((work, index) =>
+          filter && work.category !== filter ? null : (
+            <li key={work.id} className={styles.cardItem} data-hidden={work.hidden || undefined}>
+              <div className={styles.thumb}>
+                <Preview src={work.src} poster={work.poster} />
+                <span className={styles.badgeNum}>{String(index + 1).padStart(2, "0")}</span>
+                <span className={styles.badges}>
+                  {work.kind === "video" ? <span className={styles.badge}>Vídeo</span> : null}
+                  {work.hidden ? <span className={`${styles.badge} ${styles.badgeOff}`}>Oculto</span> : null}
+                </span>
+              </div>
+
+              <div className={styles.cardFields}>
+                <input
+                  className={styles.titleInput}
+                  value={work.title}
+                  placeholder="Sem título"
+                  aria-label="Título"
+                  onChange={(e) => update(work.id, { title: e.target.value })}
+                />
+                <div className={styles.selects}>
                   <select
+                    aria-label="Categoria"
                     value={work.category}
                     onChange={(e) => update(work.id, { category: e.target.value as ArtEntry["category"] })}
                   >
@@ -448,50 +477,96 @@ function ArtEditor({ works, onChange }: { works: ArtEntry[]; onChange: (w: ArtEn
                       <option key={c}>{c}</option>
                     ))}
                   </select>
-                </label>
-                <label className={styles.field}>
-                  <span>Tamanho no mosaico</span>
-                  <select value={work.size} onChange={(e) => update(work.id, { size: e.target.value as ArtEntry["size"] })}>
+                  <select
+                    aria-label="Tamanho no mosaico"
+                    value={work.size}
+                    onChange={(e) => update(work.id, { size: e.target.value as ArtEntry["size"] })}
+                  >
                     {SIZES.map((s) => (
                       <option key={s.value} value={s.value}>
                         {s.label}
                       </option>
                     ))}
                   </select>
-                </label>
+                </div>
+
+                <details className={styles.more}>
+                  <summary>
+                    Detalhes
+                    {!work.alt ? <span className={styles.warn}> · falta descrição</span> : null}
+                    {work.kind === "video" && !work.poster ? <span className={styles.warn}> · sem miniatura</span> : null}
+                  </summary>
+                  <div className={styles.moreBody}>
+                    <TextField label="Descrição (acessibilidade)" value={work.alt} onChange={(alt) => update(work.id, { alt })} />
+                    {work.kind === "video" ? (
+                      <div className={styles.field}>
+                        <span>Miniatura do vídeo</span>
+                        <div className={styles.posterRow}>
+                          {work.poster ? (
+                            // eslint-disable-next-line @next/next/no-img-element -- prévia no CMS
+                            <img className={styles.posterThumb} src={work.poster} alt="" loading="lazy" />
+                          ) : (
+                            <span className={styles.posterThumb} />
+                          )}
+                          <UploadButton
+                            accept="image/*"
+                            label={work.poster ? "Trocar" : "Enviar"}
+                            onUploaded={([file]) => update(work.id, { poster: file.url })}
+                          />
+                          {work.poster ? (
+                            <button type="button" className={styles.ghost} onClick={() => update(work.id, { poster: "" })}>
+                              Limpar
+                            </button>
+                          ) : null}
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                </details>
               </div>
-              {work.kind === "video" ? (
-                <MediaField
-                  label="Miniatura (quadro do vídeo mostrado enquanto ele carrega)"
-                  value={work.poster ?? ""}
-                  accept="image/*"
-                  onChange={(poster) => update(work.id, { poster })}
-                />
-              ) : null}
-              <label className={styles.check}>
-                <input type="checkbox" checked={Boolean(work.hidden)} onChange={(e) => update(work.id, { hidden: e.target.checked })} />
-                Ocultar no site
-              </label>
-              <div className={styles.row}>
-                <span>
-                  <button type="button" className={styles.ghost} onClick={() => onChange(move(works, index, -1))} aria-label="Subir">
-                    ↑
+
+              <div className={styles.cardFooter}>
+                <span className={styles.inline}>
+                  <button
+                    type="button"
+                    className={styles.icon}
+                    disabled={index === 0}
+                    onClick={() => onChange(move(works, index, -1))}
+                    aria-label="Mover para antes"
+                  >
+                    ←
                   </button>
-                  <button type="button" className={styles.ghost} onClick={() => onChange(move(works, index, 1))} aria-label="Descer">
-                    ↓
+                  <button
+                    type="button"
+                    className={styles.icon}
+                    disabled={index === works.length - 1}
+                    onClick={() => onChange(move(works, index, 1))}
+                    aria-label="Mover para depois"
+                  >
+                    →
                   </button>
                 </span>
-                <button
-                  type="button"
-                  className={styles.danger}
-                  onClick={() => confirm("Tirar este trabalho da página Art?") && onChange(works.filter((w) => w.id !== work.id))}
-                >
-                  Remover
-                </button>
+                <span className={styles.inline}>
+                  <button
+                    type="button"
+                    className={styles.ghost}
+                    aria-pressed={Boolean(work.hidden)}
+                    onClick={() => update(work.id, { hidden: !work.hidden })}
+                  >
+                    {work.hidden ? "Mostrar" : "Ocultar"}
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.danger}
+                    onClick={() => confirm("Tirar este trabalho da página Art?") && onChange(works.filter((w) => w.id !== work.id))}
+                  >
+                    Remover
+                  </button>
+                </span>
               </div>
-            </div>
-          </li>
-        ))}
+            </li>
+          ),
+        )}
       </ul>
     </section>
   );
