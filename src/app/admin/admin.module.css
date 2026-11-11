@@ -379,6 +379,72 @@
 
 .thumb {
   position: relative;
+  cursor: grab;
+}
+
+.thumb:active {
+  cursor: grabbing;
+}
+
+/* Imagem não reage ao mouse (só serve de alça); o vídeo aceita clique para tocar. */
+img.preview {
+  pointer-events: none;
+}
+
+.thumbBtn {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 0.25);
+  border-radius: 50%;
+  background: rgb(0 0 0 / 0.65);
+  color: var(--bone);
+  line-height: 1;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.thumbBtn:hover {
+  border-color: var(--bone);
+}
+
+.playBtn {
+  top: 50%;
+  left: 50%;
+  width: 2.6rem;
+  height: 2.6rem;
+  translate: -50% -50%;
+  font-size: 0.9rem;
+}
+
+/* Tocando: o botão some e só volta com o mouse em cima. */
+.playBtn[data-playing] {
+  opacity: 0;
+}
+
+.thumb:hover .playBtn[data-playing] {
+  opacity: 1;
+}
+
+.expandBtn {
+  right: 0.4rem;
+  bottom: 0.4rem;
+  width: 1.9rem;
+  height: 1.9rem;
+  font-size: 0.95rem;
+}
+
+/* Arrastar: o cartão que sai fica apagado; o alvo ganha uma borda vermelha. */
+.cardItem {
+  transition: opacity 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cardItem[data-dragging] {
+  opacity: 0.35;
+}
+
+.cardItem[data-over] {
+  box-shadow: 0 0 0 2px var(--red);
 }
 
 .cardItem .thumb .preview {

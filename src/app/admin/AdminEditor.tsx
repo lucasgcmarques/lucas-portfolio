@@ -372,6 +372,21 @@ function interleave(works: ArtEntry[]): ArtEntry[] {
 function ArtEditor({ works, onChange }: { works: ArtEntry[]; onChange: (w: ArtEntry[]) => void }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [filter, setFilter] = useState<ArtEntry["category"] | null>(null);
+  // Arrastar e soltar: qual cartão está sendo arrastado e sobre qual ele está.
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [overId, setOverId] = useState<string | null>(null);
+
+  /** Tira o cartão arrastado do lugar e o põe na posição do cartão alvo. */
+  function drop(targetId: string) {
+    setOverId(null);
+    if (!dragId || dragId === targetId) return;
+    const from = works.findIndex((w) => w.id === dragId);
+    const to = works.findIndex((w) => w.id === targetId);
+    const next = [...works];
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    onChange(next);
+  }
   const inputRef = useRef<HTMLInputElement>(null);
 
   function update(id: string, patch: Partial<ArtEntry>) {
@@ -444,14 +459,49 @@ function ArtEditor({ works, onChange }: { works: ArtEntry[]; onChange: (w: ArtEn
             </button>
           ))}
         </div>
-        <p className={styles.muted}>O número de cada cartão é a posição no mosaico. Use ← → para mudar.</p>
+        <p className={styles.muted}>O número é a posição no mosaico. Arraste pela imagem para reordenar (ou use ← →).</p>
       </div>
       <ul role="list" className={styles.cards}>
         {works.map((work, index) =>
           filter && work.category !== filter ? null : (
-            <li key={work.id} className={styles.cardItem} data-hidden={work.hidden || undefined}>
-              <div className={styles.thumb}>
-                <Preview src={work.src} poster={work.poster} />
+            <li
+              key={work.id}
+              className={styles.cardItem}
+              data-hidden={work.hidden || undefined}
+              data-dragging={dragId === work.id || undefined}
+              data-over={(overId === work.id && dragId !== work.id) || undefined}
+              onDragOver={(e) => {
+                if (!dragId) return;
+                e.preventDefault();
+                e.dataTransfer.dropEffect = "move";
+                if (overId !== work.id) setOverId(work.id);
+              }}
+              onDragLeave={(e) => {
+                if (!e.currentTarget.contains(e.relatedTarget as Node)) setOverId((id) => (id === work.id ? null : id));
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                drop(work.id);
+              }}
+            >
+              {/* A miniatura é a alça: arrastar por ela não atrapalha os campos de texto. */}
+              <div
+                className={styles.thumb}
+                draggable
+                title="Arraste para reordenar"
+                onDragStart={(e) => {
+                  setDragId(work.id);
+                  e.dataTransfer.effectAllowed = "move";
+                  e.dataTransfer.setData("text/plain", work.id);
+                  const card = e.currentTarget.closest("li");
+                  if (card) e.dataTransfer.setDragImage(card, 40, 30);
+                }}
+                onDragEnd={() => {
+                  setDragId(null);
+                  setOverId(null);
+                }}
+              >
+                {work.kind === "video" ? <VideoThumb src={work.src} poster={work.poster} /> : <Preview src={work.src} />}
                 <span className={styles.badgeNum}>{String(index + 1).padStart(2, "0")}</span>
                 <span className={styles.badges}>
                   {work.kind === "video" ? <span className={styles.badge}>Vídeo</span> : null}
@@ -640,6 +690,71 @@ function Preview({ src, poster }: { src: string; poster?: string }) {
     return <video className={styles.preview} src={src} poster={poster} muted loop playsInline preload={poster ? "none" : "metadata"} />;
   // eslint-disable-next-line @next/next/no-img-element -- prévia no CMS
   return <img className={styles.preview} src={src} alt="" loading="lazy" />;
+}
+
+/**
+ * Vídeo do cartão: um clique toca/pausa ali mesmo, pequeno; o botão do
+ * canto abre em tela cheia (com controles e som).
+ */
+function VideoThumb({ src, poster }: { src: string; poster?: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+
+  // Ao sair da tela cheia, volta a ser a miniatura sem controles.
+  useEffect(() => {
+    const video = ref.current;
+    if (!video) return;
+    const onChange = () => {
+      if (!document.fullscreenElement) video.controls = false;
+    };
+    video.addEventListener("fullscreenchange", onChange);
+    return () => video.removeEventListener("fullscreenchange", onChange);
+  }, []);
+
+  function toggle() {
+    const video = ref.current;
+    if (!video) return;
+    if (video.paused) video.play().catch(() => {});
+    else video.pause();
+  }
+
+  function expand() {
+    const video = ref.current;
+    if (!video) return;
+    video.controls = true;
+    video.play().catch(() => {});
+    video.requestFullscreen?.().catch(() => {});
+  }
+
+  return (
+    <>
+      <video
+        ref={ref}
+        className={styles.preview}
+        src={src}
+        poster={poster}
+        muted
+        loop
+        playsInline
+        preload={poster ? "none" : "metadata"}
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+        onClick={toggle}
+      />
+      <button
+        type="button"
+        className={`${styles.thumbBtn} ${styles.playBtn}`}
+        data-playing={playing || undefined}
+        aria-label={playing ? "Pausar" : "Tocar"}
+        onClick={toggle}
+      >
+        {playing ? "❚❚" : "▶"}
+      </button>
+      <button type="button" className={`${styles.thumbBtn} ${styles.expandBtn}`} aria-label="Tela cheia" onClick={expand}>
+        ⤢
+      </button>
+    </>
+  );
 }
 
 function UploadButton({
