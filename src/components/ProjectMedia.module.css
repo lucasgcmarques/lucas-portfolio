@@ -22,6 +22,7 @@
 
 .photoLink {
   display: block;
+  cursor: zoom-in;
   break-inside: avoid;
   margin-bottom: clamp(0.75rem, 1.5vw, 1.25rem);
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { artCategories, type ArtCategory, type ArtWork } from "@/lib/art";
+import { Lightbox } from "./Lightbox";
 import { PixelLens } from "./PixelLens";
 import filterStyles from "./PortfolioGrid.module.css";
 import styles from "./ArtMosaic.module.css";
@@ -113,7 +114,13 @@ export function ArtMosaic({ works, labels }: { works: ArtWork[]; labels: Labels 
 
       {open !== null && filtered[open] ? (
         <Lightbox
-          works={filtered}
+          items={filtered.map((work) => ({
+            src: work.src,
+            kind: work.kind,
+            poster: work.poster,
+            alt: work.alt,
+            caption: [work.title ?? "", work.category],
+          }))}
           index={open}
           labels={labels}
           onMove={(delta) => setOpen((i) => (i === null ? i : (i + delta + filtered.length) % filtered.length))}
@@ -153,99 +160,5 @@ function ArtVideo({ src, poster, label }: { src: string; poster?: string; label:
       preload={poster ? "none" : "metadata"}
       aria-label={label}
     />
-  );
-}
-
-/**
- * Trabalho em tela cheia. Setas (na tela ou no teclado) e o gesto de
- * arrastar para o lado passam para o anterior/próximo; Esc ou o fundo fecham.
- */
-function Lightbox({
-  works,
-  index,
-  labels,
-  onMove,
-  onClose,
-}: {
-  works: ArtWork[];
-  index: number;
-  labels: Labels;
-  onMove: (delta: number) => void;
-  onClose: () => void;
-}) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-  const touchX = useRef<number | null>(null);
-  const work = works[index];
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    dialog.showModal();
-    document.documentElement.style.overflow = "hidden";
-    return () => {
-      document.documentElement.style.overflow = "";
-    };
-  }, []);
-
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "ArrowRight") onMove(1);
-      if (event.key === "ArrowLeft") onMove(-1);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onMove]);
-
-  // Já carrega as imagens vizinhas para a troca ser imediata.
-  useEffect(() => {
-    for (const delta of [1, -1]) {
-      const next = works[(index + delta + works.length) % works.length];
-      if (next.kind === "image") new Image().src = next.src;
-    }
-  }, [index, works]);
-
-  return (
-    <dialog
-      ref={dialogRef}
-      className={styles.lightbox}
-      aria-label={work.title || work.alt}
-      onClose={onClose}
-      onClick={(event) => {
-        if (event.target === event.currentTarget) dialogRef.current?.close();
-      }}
-      onTouchStart={(event) => (touchX.current = event.touches[0].clientX)}
-      onTouchEnd={(event) => {
-        if (touchX.current === null) return;
-        const dx = event.changedTouches[0].clientX - touchX.current;
-        touchX.current = null;
-        if (Math.abs(dx) > 50) onMove(dx < 0 ? 1 : -1);
-      }}
-    >
-      <figure className={styles.stage} key={work.src}>
-        {work.kind === "video" ? (
-          <video className={styles.full} src={work.src} poster={work.poster} autoPlay muted loop playsInline aria-label={work.alt} />
-        ) : (
-          // eslint-disable-next-line @next/next/no-img-element -- arquivos estáticos do próprio site
-          <img className={styles.full} src={work.src} alt={work.alt} />
-        )}
-        <figcaption className={styles.fullCaption}>
-          {work.title ? <span>{work.title}</span> : null}
-          <span className={styles.category}>{work.category}</span>
-          <span className={styles.counter}>
-            {index + 1} / {works.length}
-          </span>
-        </figcaption>
-      </figure>
-
-      <button type="button" className={`${styles.nav} ${styles.prev}`} aria-label={labels.previous} onClick={() => onMove(-1)}>
-        ←
-      </button>
-      <button type="button" className={`${styles.nav} ${styles.next}`} aria-label={labels.next} onClick={() => onMove(1)}>
-        →
-      </button>
-      <button type="button" className={styles.close} aria-label={labels.close} onClick={() => dialogRef.current?.close()}>
-        ×
-      </button>
-    </dialog>
   );
 }

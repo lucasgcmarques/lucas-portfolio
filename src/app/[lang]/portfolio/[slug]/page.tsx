@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { LightboxGroup, type LightboxItem } from "@/components/Lightbox";
 import { MediaFrame } from "@/components/MediaFrame";
 import { ProjectMedia } from "@/components/ProjectMedia";
 import { PixelLens } from "@/components/PixelLens";
@@ -70,6 +71,15 @@ export default async function ProjectPage({ params }: Props) {
   const cover = project.cover ?? localCover;
   const when = formatDateRange(project.date, project.endDate, dict.dateLocale);
 
+  // Tudo que abre em tela cheia: a capa (se for imagem) e as fotos da galeria.
+  const coverAlt = project.photos[0]?.alt || project.title;
+  const galleryPhotos = localCover ? project.photos.slice(1) : project.photos;
+  const coverExpands = cover?.kind === "image";
+  const lightboxItems: LightboxItem[] = [
+    ...(coverExpands ? [{ src: cover.src, kind: "image" as const, alt: coverAlt, caption: [project.title] }] : []),
+    ...galleryPhotos.map((photo) => ({ src: photo.src, kind: "image" as const, alt: photo.alt, caption: [project.title] })),
+  ];
+
   return (
     <article className="container">
       <header className={styles.header}>
@@ -107,37 +117,58 @@ export default async function ProjectPage({ params }: Props) {
         </dl>
       </header>
 
-      {cover ? (
-        <PixelLens className={styles.cover} radius={240} pixel={16}>
-          <MediaFrame media={cover} alt={project.photos[0]?.alt || project.title} className={styles.coverMedia} priority />
-        </PixelLens>
-      ) : null}
+      <LightboxGroup
+        items={lightboxItems}
+        labels={{ close: dict.art.close, previous: dict.art.previous, next: dict.art.next }}
+      >
+        {cover ? (
+          coverExpands ? (
+            <div
+              className={styles.expandable}
+              data-lightbox="0"
+              role="button"
+              tabIndex={0}
+              aria-label={`${dict.art.expand}: ${coverAlt}`}
+            >
+              <PixelLens className={styles.cover} radius={240} pixel={16}>
+                <MediaFrame media={cover} alt={coverAlt} className={styles.coverMedia} priority />
+              </PixelLens>
+            </div>
+          ) : (
+            <PixelLens className={styles.cover} radius={240} pixel={16}>
+              <MediaFrame media={cover} alt={coverAlt} className={styles.coverMedia} priority />
+            </PixelLens>
+          )
+        ) : null}
 
-      {videos.map((video, index) => (
-        <div key={index} className={styles.cover}>
-          <VideoEmbed video={video} title={videos.length > 1 ? `${project.title} (${index + 1})` : project.title} />
-        </div>
-      ))}
+        {videos.map((video, index) => (
+          <div key={index} className={styles.cover}>
+            <VideoEmbed video={video} title={videos.length > 1 ? `${project.title} (${index + 1})` : project.title} />
+          </div>
+        ))}
 
-      {bodyParagraphs.length > 0 ? (
-        <div className={`${styles.body} ${styles.text}`}>
-          {bodyParagraphs.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
-          ))}
-        </div>
-      ) : null}
+        {bodyParagraphs.length > 0 ? (
+          <div className={`${styles.body} ${styles.text}`}>
+            {bodyParagraphs.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
+        ) : null}
 
-      {blocks.length > 0 ? (
-        <div className={styles.body}>
-          <NotionBlocks blocks={blocks} />
-        </div>
-      ) : null}
+        {blocks.length > 0 ? (
+          <div className={styles.body}>
+            <NotionBlocks blocks={blocks} />
+          </div>
+        ) : null}
 
-      <ProjectMedia
-        project={project}
-        skipFirstPhoto={Boolean(localCover)}
-        labels={{ instagram: t.instagram, photos: t.photos, openInstagram: t.openInstagram }}
-      />
+        <ProjectMedia
+          project={project}
+          skipFirstPhoto={Boolean(localCover)}
+          lightboxOffset={coverExpands ? 1 : 0}
+          labels={{ instagram: t.instagram, photos: t.photos, openInstagram: t.openInstagram, expand: dict.art.expand }}
+        />
+
+      </LightboxGroup>
 
       <nav className={styles.pager} aria-label={t.others}>
         {newer ? (

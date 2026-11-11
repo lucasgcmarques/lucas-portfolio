@@ -3,15 +3,18 @@ import { InstagramEmbed } from "./InstagramEmbed";
 import styles from "./ProjectMedia.module.css";
 
 /** Fotos do projeto (exceto a capa) e posts do Instagram escolhidos. */
-type Labels = { instagram: string; photos: string; openInstagram: string };
+type Labels = { instagram: string; photos: string; openInstagram: string; expand: string };
 
 export function ProjectMedia({
   project,
   skipFirstPhoto,
+  lightboxOffset = 0,
   labels,
 }: {
   project: Project;
   skipFirstPhoto: boolean;
+  /** Posição da primeira foto na lista do lightbox (a capa pode vir antes). */
+  lightboxOffset?: number;
   labels: Labels;
 }) {
   const photos = skipFirstPhoto ? project.photos.slice(1) : project.photos;
@@ -43,8 +46,17 @@ export function ProjectMedia({
             {labels.photos}
           </h2>
           <div className={styles.gallery}>
-            {photos.map((photo) => (
-              <a key={photo.src} href={photo.src} target="_blank" rel="noopener" className={styles.photoLink}>
+            {photos.map((photo, index) => (
+              // Sem JavaScript, o link abre a foto; com ele, abre o lightbox.
+              <a
+                key={photo.src}
+                href={photo.src}
+                target="_blank"
+                rel="noopener"
+                className={styles.photoLink}
+                data-lightbox={lightboxOffset + index}
+                aria-label={`${labels.expand}: ${photo.alt || project.title}`}
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element -- fotos estáticas do próprio site */}
                 <img className={styles.photo} src={photo.src} alt={photo.alt} loading="lazy" decoding="async" />
               </a>

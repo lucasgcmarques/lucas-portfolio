@@ -134,3 +134,13 @@
     text-align: left;
   }
 }
+
+/* Capa que abre em tela cheia ao clicar. */
+.expandable {
+  cursor: zoom-in;
+}
+
+.expandable:focus-visible {
+  outline: 2px solid var(--bone);
+  outline-offset: 4px;
+}
