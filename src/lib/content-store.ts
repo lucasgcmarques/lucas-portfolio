@@ -39,11 +39,20 @@ async function readLatest(): Promise<SiteContent | null> {
   }
 }
 
-/** Conteúdo publicado pelo CMS, ou null enquanto nada foi salvo. */
-export const getContent = unstable_cache(readLatest, ["site-content"], {
+const readCached = unstable_cache(readLatest, ["site-content"], {
   tags: [CONTENT_TAG],
   revalidate: 3600,
 });
+
+/**
+ * Conteúdo publicado pelo CMS, ou null enquanto nada foi salvo. Um null em
+ * cache (ex.: gravado antes do token existir) não vale: lê de novo direto.
+ */
+export async function getContent(): Promise<SiteContent | null> {
+  const cached = await readCached();
+  if (cached || !blobConfigured()) return cached;
+  return readLatest();
+}
 
 /** Sem cache: usado pelo /admin para sempre editar a versão mais nova. */
 export const getContentFresh = readLatest;
