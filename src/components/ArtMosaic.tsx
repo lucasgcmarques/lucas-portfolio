@@ -54,7 +54,8 @@ export function ArtMosaic({ works, labels }: { works: ArtWork[]; labels: Labels 
   return (
     <>
       <div className={filterStyles.filters} role="group" aria-label={labels.filterLabel}>
-        {[null, ...artCategories].map((category) => (
+        {/* Categoria sem nenhum trabalho não aparece no filtro. */}
+        {[null, ...artCategories.filter((c) => works.some((work) => work.category === c))].map((category) => (
           <button
             key={category ?? "all"}
             type="button"

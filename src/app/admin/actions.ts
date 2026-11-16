@@ -36,5 +36,7 @@ export async function saveContent(content: SiteContent): Promise<{ ok: boolean; 
   // O site inteiro passa a mostrar o conteúdo novo na próxima visita.
   updateTag(CONTENT_TAG);
   revalidatePath("/", "layout");
+  // O sitemap fica fora do layout e tem cache próprio.
+  revalidatePath("/sitemap.xml");
   return { ok: true, savedAt };
 }

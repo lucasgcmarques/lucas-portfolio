@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { artCategories } from "@/lib/art";
+import { uniqueSlugs } from "@/lib/slug";
 import {
   isVideoUrl,
   newId,
@@ -70,9 +71,14 @@ export function AdminEditor({
 
   function save() {
     startSaving(async () => {
-      const result = await saveContent(content);
+      // Endereço vazio vira fixo no primeiro salvamento: mudar o título depois
+      // não quebra links já compartilhados.
+      const slugs = uniqueSlugs(content.projects.map((p) => ({ id: p.id, title: p.title, override: p.slug })));
+      const next = { ...content, projects: content.projects.map((p) => (p.slug ? p : { ...p, slug: slugs.get(p.id)! })) };
+      const result = await saveContent(next);
       if (result.ok) {
-        setSaved(JSON.stringify(content));
+        setContent(next);
+        setSaved(JSON.stringify(next));
         setStatus(`Salvo às ${new Date(result.savedAt!).toLocaleTimeString("pt-BR")}. O site já foi atualizado.`);
       } else {
         setStatus(result.error ?? "Erro ao salvar.");
@@ -333,7 +339,7 @@ function ProjectsEditor({ projects, onChange }: { projects: ProjectEntry[]; onCh
               </datalist>
             </label>
             <TextField
-              label="Endereço (fim da URL; vazio = gerado do título)"
+              label="Endereço (fim da URL; vazio = gerado do título ao salvar, e depois fica fixo)"
               value={project.slug}
               onChange={(slug) => update({ slug })}
             />
