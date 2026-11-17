@@ -65,9 +65,12 @@ export default async function ProjectPage({ params }: Props) {
   const videos = [project.videoUrl, ...project.videos]
     .map((url) => parseVideo(url))
     .filter((video) => video !== null);
-  // Sem Capa no Notion, a primeira foto guardada no site vira a capa.
+  // Sem Capa, a primeira foto vira a capa — a não ser que o projeto tenha
+  // vídeo: aí o vídeo abre a página e todas as fotos ficam na galeria abaixo.
   const localCover: Media | null =
-    !project.cover && project.photos[0] ? { kind: "image", src: project.photos[0].src } : null;
+    !project.cover && videos.length === 0 && project.photos[0]
+      ? { kind: "image", src: project.photos[0].src }
+      : null;
   const cover = project.cover ?? localCover;
   const when = formatDateRange(project.date, project.endDate, dict.dateLocale);
 

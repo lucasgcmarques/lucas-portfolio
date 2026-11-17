@@ -361,7 +361,7 @@ function ProjectsEditor({ projects, onChange }: { projects: ProjectEntry[]; onCh
             onChange={(value) => update({ tags: value.split(",").map((t) => t.trim()).filter(Boolean) })}
           />
           <MediaField
-            label="Capa (imagem ou vídeo; vazio = primeira foto)"
+            label="Capa (imagem ou vídeo; vazio = o vídeo do projeto, se houver, ou a primeira foto)"
             value={project.cover}
             accept="image/*,video/*"
             onChange={(cover) => update({ cover })}
