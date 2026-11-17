@@ -89,14 +89,40 @@
 
 .pagerLink {
   display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
+  align-items: center;
+  gap: var(--space-s, 0.9rem);
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
   text-decoration: none;
   min-width: 0;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.pagerLink:hover,
+.pagerLink:focus-visible {
+  border-color: var(--bone);
+  background: color-mix(in srgb, var(--bone) 6%, transparent);
 }
 
 .pagerNext {
+  flex-direction: row-reverse;
   text-align: right;
+}
+
+.pagerThumb {
+  flex: none;
+  width: 5.5rem;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 3px;
+}
+
+.pagerText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
 }
 
 .pagerLabel {
@@ -110,10 +136,36 @@
   font-weight: 600;
   font-size: var(--step-1);
   line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
-.pagerLink:hover .pagerTitle {
-  text-decoration: underline;
+/* Topo: "Portfólio" à esquerda, "Próximo evento →" à direita. */
+.topNav {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-m);
+  margin-bottom: var(--space-m);
+}
+
+.topNav .back {
+  margin-bottom: 0;
+}
+
+.nextButton {
+  flex: none;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: var(--step--1);
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.nextButton:hover,
+.nextButton:focus-visible {
+  border-color: var(--bone);
+  background: color-mix(in srgb, var(--bone) 8%, transparent);
 }
 
 @media (max-width: 600px) {
@@ -131,6 +183,7 @@
   }
 
   .pagerNext {
+    flex-direction: row;
     text-align: left;
   }
 }

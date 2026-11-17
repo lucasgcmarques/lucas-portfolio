@@ -59,8 +59,10 @@ export default async function ProjectPage({ params }: Props) {
   ]);
   const bodyParagraphs = paragraphs(project.body ?? "");
   const index = projects.findIndex((p) => p.id === project.id);
-  const newer = index > 0 ? projects[index - 1] : null;
-  const older = index < projects.length - 1 ? projects[index + 1] : null;
+  // Navegação em volta: depois do último projeto vem o primeiro, e vice-versa.
+  const hasSiblings = projects.length > 1 && index >= 0;
+  const prev = hasSiblings ? projects[(index - 1 + projects.length) % projects.length] : null;
+  const next = hasSiblings ? projects[(index + 1) % projects.length] : null;
 
   const videos = [project.videoUrl, ...project.videos]
     .map((url) => parseVideo(url))
@@ -86,9 +88,16 @@ export default async function ProjectPage({ params }: Props) {
   return (
     <article className="container">
       <header className={styles.header}>
-        <p className={styles.back}>
-          <Link href={href(lang, "/portfolio")}>{dict.portfolio.title}</Link>
-        </p>
+        <div className={styles.topNav}>
+          <p className={styles.back}>
+            <Link href={href(lang, "/portfolio")}>{dict.portfolio.title}</Link>
+          </p>
+          {next ? (
+            <Link href={href(lang, `/portfolio/${next.slug}`)} className={styles.nextButton} rel="next" title={next.title}>
+              {t.nextEvent} <span aria-hidden="true">→</span>
+            </Link>
+          ) : null}
+        </div>
         <h1 className={styles.title}>{project.title}</h1>
         {project.description ? <p className={styles.lead}>{project.description}</p> : null}
 
@@ -173,22 +182,25 @@ export default async function ProjectPage({ params }: Props) {
 
       </LightboxGroup>
 
-      <nav className={styles.pager} aria-label={t.others}>
-        {newer ? (
-          <Link href={href(lang, `/portfolio/${newer.slug}`)} className={styles.pagerLink} rel="prev">
-            <span className={styles.pagerLabel}>{t.newer}</span>
-            <span className={styles.pagerTitle}>{newer.title}</span>
-          </Link>
-        ) : (
-          <span />
-        )}
-        {older ? (
-          <Link href={href(lang, `/portfolio/${older.slug}`)} className={`${styles.pagerLink} ${styles.pagerNext}`} rel="next">
-            <span className={styles.pagerLabel}>{t.older}</span>
-            <span className={styles.pagerTitle}>{older.title}</span>
-          </Link>
-        ) : null}
-      </nav>
+      {prev && next ? (
+        <nav className={styles.pager} aria-label={t.others}>
+          {[
+            { project: prev, label: `← ${t.prevEvent}`, rel: "prev", className: styles.pagerLink },
+            { project: next, label: `${t.nextEvent} →`, rel: "next", className: `${styles.pagerLink} ${styles.pagerNext}` },
+          ].map(({ project: item, label, rel, className }) => (
+            <Link key={rel} href={href(lang, `/portfolio/${item.slug}`)} className={className} rel={rel}>
+              {item.thumbnail?.kind === "image" ? (
+                // eslint-disable-next-line @next/next/no-img-element -- miniatura pequena do próximo projeto
+                <img className={styles.pagerThumb} src={item.thumbnail.src} alt="" loading="lazy" decoding="async" />
+              ) : null}
+              <span className={styles.pagerText}>
+                <span className={styles.pagerLabel}>{label}</span>
+                <span className={styles.pagerTitle}>{item.title}</span>
+              </span>
+            </Link>
+          ))}
+        </nav>
+      ) : null}
     </article>
   );
 }
